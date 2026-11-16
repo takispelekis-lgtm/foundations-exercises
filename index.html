@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Θεμελιώσεις · Διαδραστικές ασκήσεις</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:wght@400;600&family=Fira+Sans+Condensed:wght@600;700&display=swap">
+<style>
+  :root { --bg:#f7f4ee; --panel:#fff; --fg:#1f2328; --muted:#6b665c; --line:#d9d2c4; --accent:#a2611f; --accent-2:#2a6f97; --shadow:0 1px 2px rgba(0,0,0,.06),0 6px 18px rgba(60,40,10,.08); }
+  @media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --bg:#15171a; --panel:#1e2126; --fg:#e8e6e1; --muted:#a39d92; --line:#3a3f47; --accent:#d99a4e; --accent-2:#6fb3dd; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme: dark; } }
+  :root[data-theme="dark"] { --bg:#15171a; --panel:#1e2126; --fg:#e8e6e1; --muted:#a39d92; --line:#3a3f47; --accent:#d99a4e; --accent-2:#6fb3dd; --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 18px rgba(0,0,0,.35); color-scheme: dark; }
+  body { margin:0; background:var(--bg); color:var(--fg); font-family:"Fira Sans","Segoe UI",system-ui,sans-serif; padding-block:40px 60px; padding-left:max(16px, env(safe-area-inset-left, 0px)); padding-right:max(16px, env(safe-area-inset-right, 0px)); }
+  .wrap { max-width:1040px; margin:0 auto; }
+  .uni { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--muted); }
+  h1 { font-family:"Fira Sans Condensed","Fira Sans",sans-serif; font-size:40px; margin:6px 0 4px; color:var(--accent); line-height:1.1; text-wrap:balance; }
+  .lead { color:var(--muted); max-width:62ch; margin:0 0 28px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:18px; }
+  a.card { display:block; text-decoration:none; color:inherit; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:20px 22px; box-shadow:var(--shadow); transition:transform .15s ease, border-color .15s ease; }
+  a.card:hover { transform:translateY(-2px); border-color:var(--accent); }
+  a.card .n { font-size:12px; letter-spacing:.08em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  a.card h2 { font-family:"Fira Sans Condensed","Fira Sans",sans-serif; font-size:26px; margin:4px 0 8px; }
+  a.card p { margin:0; color:var(--muted); font-size:14.5px; line-height:1.5; }
+  a.card ul { margin:10px 0 0; padding-left:18px; font-size:13.5px; color:var(--fg); }
+  .how { margin-top:34px; background:var(--panel); border:1px solid var(--line); border-radius:12px; padding:18px 22px; font-size:14.5px; }
+  .how h3 { margin:0 0 8px; font-family:"Fira Sans Condensed","Fira Sans",sans-serif; font-size:18px; }
+  .how ul { margin:0; padding-left:20px; }
+  .kbd { font-family:ui-monospace,monospace; font-size:11px; border:1px solid var(--line); border-radius:4px; padding:0 4px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="uni">Πανεπιστήμιο Πατρών · Τμήμα Πολιτικών Μηχανικών · Θεμελιώσεις</div>
+  <h1>Διαδραστικές ασκήσεις Θεμελιώσεων</h1>
+  <p class="lead">Τρεις εφαρμογές για παρουσίαση στην τάξη: κάθε άσκηση λύνεται βήμα-βήμα με κινούμενα σχήματα, ενώ τα δεδομένα αλλάζουν με ρυθμιστικά και η λύση επανυπολογίζεται ζωντανά. Κάθε εφαρμογή περιλαμβάνει το απαραίτητο τυπολόγιο, πίνακες και διαγράμματα.</p>
+  <div class="cards">
+    <a class="card" href="bearing.html"><div class="n">Ενότητα 1 · 8 ασκήσεις</div><h2>Φέρουσα Ικανότητα</h2><p>Τοίχοι αντιστήριξης (εκκεντρότητα, ολίσθηση, ανατροπή), DIN 4017 για λοξή και έκκεντρη φόρτιση, γενική εξίσωση φέρουσας ικανότητας με υδροφόρο ορίζοντα, TSA/ESA.</p><ul><li>Πίνακες DIN 4017 (N, μορφής, λοξότητας)</li><li>Συντελεστές Nc, Nq, Nγ</li></ul></a>
+    <a class="card" href="settlements.html"><div class="n">Ενότητα 2 · 9 ασκήσεις</div><h2>Καθιζήσεις</h2><p>Θεωρία ελαστικότητας (Steinbrenner, επαλληλία ορθογωνίων, αρχή διαστρωμάτωσης), μέθοδος Schmertmann με E(z) ή CPT, στερεοποίηση με τη μέθοδο cc και χρόνος καθιζήσεων.</p><ul><li>Διάγραμμα Steinbrenner (υπολογιζόμενο)</li><li>Διαγράμματα Iz και U–Tv</li></ul></a>
+    <a class="card" href="piles.html"><div class="n">Ενότητα 3 · παραδείγματα</div><h2>Πάσσαλοι</h2><p>Μεμονωμένοι πάσσαλοι σε άργιλο και άμμο (μέθοδοι α και β), πολυστρωματικό έδαφος, ομάδες πασσάλων (απόδοση, αστοχία μπλοκ, καθίζηση ισοδύναμης κοιτόστρωσης), πλευρική φόρτιση κατά Broms.</p><ul><li>Δικά μας παραδείγματα με βάση την ύλη του μαθήματος</li></ul></a>
+  </div>
+  <div class="how">
+    <h3>Χρήση στην παρουσίαση</h3>
+    <ul>
+      <li><span class="kbd">→</span> / <span class="kbd">←</span> επόμενο και προηγούμενο βήμα, <span class="kbd">Home</span> / <span class="kbd">End</span> αρχή και τέλος της λύσης.</li>
+      <li><span class="kbd">P</span> λειτουργία παρουσίασης (μεγαλύτερα γράμματα, χωρίς πλαϊνό μενού), <span class="kbd">F</span> πλήρης οθόνη.</li>
+      <li>«Αυτόματα» αναπαράγει τα βήματα διαδοχικά. Τα ρυθμιστικά στα «Δεδομένα» αλλάζουν την άσκηση και όλα τα βήματα επανυπολογίζονται.</li>
+      <li>Σε κάθε βήμα το σχήμα τονίζει τα μεγέθη που χρησιμοποιούνται.</li>
+    </ul>
+  </div>
+</div>
+</body>
+</html>

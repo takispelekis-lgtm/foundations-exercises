@@ -1,0 +1,1739 @@
+<!doctype html>
+<html lang="el">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Φέρουσα Ικανότητα · Θεμελιώσεις</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Sans:ital,wght@0,400;0,600;1,400&family=Fira+Sans+Condensed:wght@600;700&family=STIX+Two+Text:ital,wght@0,400;0,600;1,400&display=swap">
+<style>
+/* Layout: fixed sidebar of exercises on the left, one exercise at a time on the right.
+   Figure + data sliders on top, step-by-step solution below. Presentation mode hides the sidebar and enlarges type. */
+:root {
+  --bg: #f7f4ee;            /* warm paper */
+  --panel: #ffffff;
+  --panel-2: #f0ebe1;
+  --fg: #1f2328;
+  --muted: #6b665c;
+  --line: #d9d2c4;
+  --accent: #a2611f;        /* ochre: soil */
+  --accent-2: #2a6f97;      /* water / steel blue */
+  --load: #c62828;          /* loads & pressures */
+  --conc: #8d8d8d;          /* concrete */
+  --conc-2: #5f5f5f;
+  --soil: #d9b56b;
+  --soil-2: #a67c3b;
+  --clay: #b08968;
+  --rock: #6b6b6b;
+  --water: #4aa3df;
+  --ok: #2e7d32;
+  --warn: #d84315;
+  --hl: #ffb300;
+  --step-bg: #fff8e6;
+  --font-ui: "Fira Sans", "Segoe UI", system-ui, sans-serif;
+  --font-head: "Fira Sans Condensed", "Fira Sans", "Segoe UI", sans-serif;
+  --font-math: "STIX Two Text", "Cambria Math", "Times New Roman", serif;
+  --radius: 10px;
+  --shadow: 0 1px 2px rgba(0,0,0,.06), 0 6px 18px rgba(60,40,10,.08);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #15171a; --panel: #1e2126; --panel-2: #262a30; --fg: #e8e6e1; --muted: #a39d92; --line: #3a3f47;
+    --accent: #d99a4e; --accent-2: #6fb3dd; --load: #ff6b6b; --conc: #9a9a9a; --conc-2: #c9c9c9;
+    --soil: #b08d4a; --soil-2: #7a5a2a; --clay: #8a6a4e; --rock: #4a4a4a; --water: #5fb2e8;
+    --ok: #66bb6a; --warn: #ff8a65; --hl: #ffc947; --step-bg: #2a2820;
+    --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #15171a; --panel: #1e2126; --panel-2: #262a30; --fg: #e8e6e1; --muted: #a39d92; --line: #3a3f47;
+  --accent: #d99a4e; --accent-2: #6fb3dd; --load: #ff6b6b; --conc: #9a9a9a; --conc-2: #c9c9c9;
+  --soil: #b08d4a; --soil-2: #7a5a2a; --clay: #8a6a4e; --rock: #4a4a4a; --water: #5fb2e8;
+  --ok: #66bb6a; --warn: #ff8a65; --hl: #ffc947; --step-bg: #2a2820;
+  --shadow: 0 1px 2px rgba(0,0,0,.4), 0 6px 18px rgba(0,0,0,.35);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--fg); font-family: var(--font-ui); font-size: 15.5px; line-height: 1.5; }
+body::before { content: ""; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--panel); }
+h1, h2, h3, h4 { font-family: var(--font-head); line-height: 1.2; text-wrap: balance; margin: 0; }
+button { font: inherit; color: inherit; }
+a { color: var(--accent-2); }
+
+
+/* ---------- university header (model: GeoFEM Web Solver) ---------- */
+.uhead { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 18px; margin: 10px 12px 0; padding: 10px 16px; background: #0f172a; color: #fff; border-radius: 14px; box-shadow: 0 2px 6px rgba(0,0,0,.18); font-family: var(--font-ui); }
+.uhead .ulogo { height: 46px; width: auto; background: #fff; padding: 5px 7px; border-radius: 7px; flex-shrink: 0; }
+.uhead .udept { display: flex; flex-direction: column; padding-right: 16px; border-right: 1px solid #334155; white-space: nowrap; }
+.uhead .udept b { font-size: 14px; letter-spacing: .02em; }
+.uhead .udept span { font-size: 12px; color: #94a3b8; margin-top: 2px; }
+.uhead .uapp { flex: 1; min-width: 0; }
+.uhead .uapp h1 { display: flex; align-items: center; gap: 8px; font-size: 20px; font-weight: 800; letter-spacing: -.01em; color: #fff; white-space: nowrap; }
+.uhead .uapp h1 svg { width: 22px; height: 22px; flex: none; }
+.uhead .uapp h1 svg, .uhead .uapp h1 .ver { color: #fbbf24; }
+.uhead .uapp p { margin: 2px 0 0; font-size: 13.5px; color: #cbd5e1; line-height: 1.3; }
+body.present .uhead { margin: 8px 16px 0; }
+@media (max-width: 760px) { .uhead .udept { border-right: 0; padding-right: 0; } .uhead .uapp h1 { white-space: normal; } }
+
+/* ---------- shell ---------- */
+.app { display: grid; grid-template-columns: 300px 1fr; min-height: 100%; }
+.side { background: var(--panel); border-right: 1px solid var(--line); position: sticky; top: env(safe-area-inset-top, 0px); height: calc(100vh - env(safe-area-inset-top, 0px)); overflow: auto; display: flex; flex-direction: column; }
+.brand { padding: 18px 18px 12px; border-bottom: 1px solid var(--line); }
+.brand .uni { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.brand h1 { font-size: 22px; margin-top: 4px; color: var(--accent); }
+.brand .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+.nav { padding: 10px; display: flex; flex-direction: column; gap: 3px; }
+.nav .grp { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); padding: 12px 8px 4px; }
+.nav button { text-align: left; background: none; border: 0; border-radius: 8px; padding: 8px 10px; cursor: pointer; display: grid; grid-template-columns: 30px 1fr; gap: 8px; align-items: start; }
+.nav button:hover { background: var(--panel-2); }
+.nav button.on { background: var(--accent); color: #fff; }
+.nav button .n { font-family: var(--font-head); font-weight: 600; font-size: 15px; opacity: .85; }
+.nav button .t { font-size: 13.5px; line-height: 1.3; }
+.side .foot { margin-top: auto; padding: 12px 18px; font-size: 12px; color: var(--muted); border-top: 1px solid var(--line); }
+.main { min-width: 0; padding-block: 18px 60px; padding-left: max(22px, env(safe-area-inset-left, 0px)); padding-right: max(22px, env(safe-area-inset-right, 0px)); }
+.topbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+.topbar .sp { flex: 1; }
+.btn { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 7px 12px; cursor: pointer; font-size: 14px; display: inline-flex; gap: 6px; align-items: center; }
+.btn:hover { border-color: var(--accent); }
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn:focus-visible, .nav button:focus-visible, input:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 2px; }
+.btn[disabled] { opacity: .45; cursor: default; }
+.menu-btn { display: none; }
+
+/* ---------- exercise ---------- */
+.ex-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px 16px; margin-bottom: 10px; }
+.ex-head .kicker { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; }
+.ex-head h2 { font-size: 28px; }
+.tags { display: flex; gap: 6px; flex-wrap: wrap; }
+.tag { font-size: 12px; background: var(--panel-2); border: 1px solid var(--line); border-radius: 999px; padding: 2px 9px; color: var(--muted); }
+.card { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px 18px; min-width: 0; }
+.card h3 { font-size: 13px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+.grid2 { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 16px; align-items: start; margin-bottom: 16px; }
+.statement { font-size: 16px; }
+.statement ul, .statement ol { padding-left: 22px; margin: 6px 0; }
+.statement li { margin: 2px 0; }
+.given { display: grid; grid-template-columns: 1fr auto; gap: 2px 12px; font-size: 14.5px; }
+.given dt { color: var(--muted); }
+.given dd { margin: 0; font-family: var(--font-math); font-size: 16px; text-align: right; }
+
+/* figure */
+.fig-wrap { position: relative; }
+.fig { width: 100%; overflow: hidden; border-radius: 8px; background: var(--panel-2); }
+.fig svg { display: block; width: 100%; height: auto; max-width: 100%; font-family: var(--font-ui); }
+.fig text { fill: var(--fg); font-size: 13px; }
+.fig .math { font-family: var(--font-math); font-style: italic; font-size: 14px; }
+.fig .lbl-load { fill: var(--load); font-weight: 600; }
+.fig .lbl-muted { fill: var(--muted); font-size: 11.5px; }
+.fig .lbl-conc { fill: var(--conc-2); }
+.fig .lbl-w { fill: #fff; font-weight: 600; }
+.fig .conc { fill: var(--conc); stroke: var(--conc-2); stroke-width: 1.2; }
+.fig .soil { fill: var(--soil); stroke: none; }
+.fig .soil2 { fill: var(--soil-2); }
+.fig .clay { fill: var(--clay); }
+.fig .rock { fill: var(--rock); }
+.fig .water { fill: var(--water); }
+.fig .load { stroke: var(--load); fill: var(--load); }
+.fig .load-line { stroke: var(--load); fill: none; stroke-width: 2; }
+.fig .load-fill { fill: var(--load); fill-opacity: .14; stroke: var(--load); stroke-width: 1.5; }
+.fig .weight { stroke: var(--accent-2); fill: var(--accent-2); }
+.fig .weight-line { stroke: var(--accent-2); stroke-width: 3; fill: none; }
+.fig .dimline { stroke: var(--fg); stroke-width: 1; fill: none; }
+.fig .ground { stroke: var(--fg); stroke-width: 1.5; }
+.fig .thin { stroke: var(--fg); stroke-width: 1; fill: none; }
+.fig .dash { stroke-dasharray: 5 4; }
+.fig .pt { fill: var(--load); stroke: #fff; stroke-width: 1.5; }
+.fig .pile { fill: var(--conc); stroke: var(--conc-2); stroke-width: 1.2; }
+.fig .ok { fill: var(--ok); } .fig .okl { stroke: var(--ok); }
+.fig .warnf { fill: var(--warn); } .fig .warnl { stroke: var(--warn); }
+.fig .hatch { fill: url(#hatch); }
+.fig .blue { stroke: var(--accent-2); fill: none; stroke-width: 2.5; }
+.fig .fill-blue { fill: var(--accent-2); fill-opacity: .22; stroke: var(--accent-2); stroke-width: 2; }
+.fig .fill-green { fill: var(--ok); fill-opacity: .22; stroke: var(--ok); stroke-width: 2; }
+.fig .fill-red { fill: var(--load); fill-opacity: .22; stroke: var(--load); stroke-width: 2; }
+.fig .fill-hl { fill: var(--hl); fill-opacity: .3; stroke: var(--hl); stroke-width: 2; }
+.fig .grid { stroke: var(--line); stroke-width: .8; }
+.fig .axis { stroke: var(--fg); stroke-width: 1.2; }
+.fig .curve { fill: none; stroke: var(--accent-2); stroke-width: 2; }
+.fig .curve.muted { stroke: var(--muted); stroke-width: 1.2; opacity: .7; }
+.fig .curve.hot { stroke: var(--load); stroke-width: 2.6; }
+.fig .marker { fill: var(--hl); stroke: var(--fg); stroke-width: 1.5; }
+.fig .guide { stroke: var(--load); stroke-width: 1.2; stroke-dasharray: 4 3; fill: none; }
+
+/* highlight / animation */
+.fig.focus [data-k] { transition: opacity .4s ease; }
+.fig.focus [data-k]:not(.hl) { opacity: .4; }
+.fig [data-k].hl { opacity: 1; }
+.fig .a-draw { stroke-dasharray: 1600; stroke-dashoffset: 1600; animation: draw 1.1s ease-out forwards; }
+.fig .a-fade { animation: fadein .7s ease both; }
+.fig .a-pop { transform-box: fill-box; transform-origin: center; animation: pop .6s cubic-bezier(.2,.9,.3,1.3) both; }
+.fig .a-down { transform-box: fill-box; transform-origin: top center; animation: growdown .8s ease-out both; }
+.fig .a-left { transform-box: fill-box; transform-origin: right center; animation: growleft .8s ease-out both; }
+.fig .a-right { transform-box: fill-box; transform-origin: left center; animation: growleft .8s ease-out both; }
+.fig .a-sink { animation: sink 1.6s ease-in-out both; }
+.fig .a-pulse { animation: pulse 1.4s ease-in-out infinite; }
+.fig .a-flow { stroke-dasharray: 6 6; animation: flow 1.2s linear infinite; }
+@keyframes draw { to { stroke-dashoffset: 0; } }
+@keyframes fadein { from { opacity: 0; } to { opacity: 1; } }
+@keyframes pop { from { transform: scale(.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes growdown { from { transform: scaleY(0); } to { transform: scaleY(1); } }
+@keyframes growleft { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+@keyframes sink { from { transform: translateY(0); } to { transform: translateY(var(--sink, 14px)); } }
+@keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .45; } }
+@keyframes flow { to { stroke-dashoffset: -24; } }
+@media (prefers-reduced-motion: reduce) {
+  .fig .a-draw, .fig .a-fade, .fig .a-pop, .fig .a-down, .fig .a-left, .fig .a-right, .fig .a-sink, .fig .a-pulse, .fig .a-flow { animation: none; stroke-dashoffset: 0; }
+  .step { animation: none !important; }
+}
+.fig-cap { font-size: 12.5px; color: var(--muted); margin-top: 6px; }
+
+/* data sliders */
+.sliders { display: grid; gap: 8px; }
+.sl { display: grid; grid-template-columns: 1fr 86px; grid-template-rows: auto auto; gap: 0 10px; align-items: center; }
+.sl label { font-size: 13.5px; color: var(--muted); grid-column: 1; }
+.sl .v { grid-column: 2; grid-row: 1 / span 2; font-family: var(--font-math); font-size: 17px; text-align: right; font-variant-numeric: tabular-nums; }
+.sl .v small { font-family: var(--font-ui); font-size: 12px; color: var(--muted); margin-left: 3px; }
+.sl input[type=range] { grid-column: 1; width: 100%; accent-color: var(--accent); margin: 0; }
+.sl.changed label { color: var(--accent); font-weight: 600; }
+.sliders-foot { display: flex; gap: 8px; align-items: center; margin-top: 10px; font-size: 12.5px; color: var(--muted); flex-wrap: wrap; }
+
+/* steps */
+.steps-head { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 12px; }
+.steps-head .prog { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.progress { height: 4px; background: var(--panel-2); border-radius: 2px; overflow: hidden; margin-bottom: 14px; }
+.progress i { display: block; height: 100%; background: var(--accent); transition: width .4s ease; }
+.steps { display: grid; gap: 10px; }
+.step { border: 1px solid var(--line); border-left: 4px solid var(--line); border-radius: 8px; padding: 12px 16px; background: var(--panel); animation: stepin .45s ease both; }
+.step.cur { border-left-color: var(--accent); background: var(--step-bg); box-shadow: var(--shadow); }
+.step.done { opacity: .82; }
+.step .st { display: flex; gap: 10px; align-items: baseline; margin-bottom: 6px; }
+.step .st .no { font-family: var(--font-head); font-weight: 700; color: var(--accent); font-size: 14px; letter-spacing: .04em; }
+.step .st h4 { font-size: 17px; }
+.step .body p { margin: 6px 0; }
+.step .note { font-size: 13.5px; color: var(--muted); border-top: 1px dashed var(--line); margin-top: 8px; padding-top: 6px; }
+@keyframes stepin { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+.result { margin-top: 14px; border: 2px solid var(--ok); border-radius: var(--radius); padding: 12px 16px; background: var(--panel); animation: stepin .5s ease both; }
+.result h3 { color: var(--ok); }
+.result .big { font-family: var(--font-math); font-size: 22px; }
+.hint { display: none; }
+
+/* math markup */
+.m { font-family: var(--font-math); font-size: 1.08em; white-space: normal; overflow-wrap: anywhere; }
+.m .fr, .m .sq, .m sub, .m sup { white-space: nowrap; }
+.m i { font-style: italic; }
+.m sub, .m sup { font-size: .72em; line-height: 0; }
+.m sub { vertical-align: -.25em; } .m sup { vertical-align: .55em; }
+.m .fr { display: inline-flex; flex-direction: column; vertical-align: middle; text-align: center; margin: 0 .15em; line-height: 1.15; }
+.m .fr > span:first-child { border-bottom: 1.2px solid currentColor; padding: 0 .25em .05em; }
+.m .fr > span:last-child { padding: .05em .25em 0; }
+.m .sq { display: inline-flex; align-items: stretch; vertical-align: middle; }
+.m .sq .sqi { border-top: 1.2px solid currentColor; padding: 0 .2em; margin-left: .05em; }
+.m .txt { font-family: var(--font-ui); font-size: .9em; }
+.m .u { font-style: normal; font-size: .9em; margin-left: .2em; }
+.m .hl { background: var(--hl); color: #1f2328; padding: 0 .3em; border-radius: 4px; font-weight: 600; }
+.m .op { padding: 0 .18em; }
+.m .big { font-size: 1.35em; vertical-align: -.1em; }
+.eq { font-family: var(--font-math); font-size: 1.14em; margin: 8px 0 8px 10px; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; }
+.eq { overflow-x: auto; max-width: 100%; padding-bottom: 2px; }
+.eq .m { white-space: nowrap; }
+.eq .why { font-family: var(--font-ui); font-size: 13px; color: var(--muted); }
+.eqs { display: grid; gap: 4px; }
+
+/* tables */
+table.tbl { border-collapse: collapse; width: 100%; font-size: 14px; font-variant-numeric: tabular-nums; }
+.tbl th, .tbl td { border: 1px solid var(--line); padding: 5px 9px; text-align: center; }
+.tbl th { background: var(--panel-2); font-weight: 600; }
+.tbl td:first-child, .tbl th:first-child { text-align: left; }
+.tbl tr.hot td { background: var(--step-bg); font-weight: 600; }
+.tbl .m { font-size: 1em; }
+.tbl-wrap { overflow-x: auto; }
+
+/* formula sheet */
+.sheet { display: grid; grid-template-columns: repeat(auto-fit, minmax(340px, 1fr)); gap: 16px; }
+.sheet .card h3 { color: var(--accent); font-size: 15px; letter-spacing: 0; text-transform: none; font-family: var(--font-head); }
+.sheet .card .eq { margin-left: 4px; }
+.sheet .card p { margin: 4px 0; font-size: 14px; }
+.sheet .card .who { font-size: 12.5px; color: var(--muted); }
+.wide, .sheet .card:has(table) { grid-column: 1 / -1; }
+.sheet .card:has(table) .tbl { width: auto; min-width: 50%; }
+
+/* presentation mode */
+body.present .side { display: none; }
+body.present .app { grid-template-columns: 1fr; }
+body.present .main { font-size: 18px; padding-left: max(40px, env(safe-area-inset-left, 0px)); padding-right: max(40px, env(safe-area-inset-right, 0px)); max-width: 1500px; margin: 0 auto; }
+body.present .ex-head h2 { font-size: 36px; }
+body.present .step .st h4 { font-size: 21px; }
+body.present .eq { font-size: 1.25em; }
+body.present .menu-btn { display: inline-flex; }
+
+@media (max-width: 980px) {
+  .app { grid-template-columns: 1fr; }
+  .side { position: fixed; z-index: 20; left: 0; top: env(safe-area-inset-top, 0px); width: min(320px, 86vw); transform: translateX(-105%); transition: transform .3s ease; box-shadow: var(--shadow); }
+  .side.open { transform: none; }
+  .menu-btn { display: inline-flex; }
+  .grid2 { grid-template-columns: 1fr; }
+  .main { padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
+  .sheet { grid-template-columns: 1fr; }
+}
+.kbd { font-family: ui-monospace, monospace; font-size: 11px; border: 1px solid var(--line); border-radius: 4px; padding: 0 4px; background: var(--panel-2); }
+
+</style>
+<script>
+/* ============================================================
+   Engine for interactive foundation-engineering exercises
+   (shared by the bearing-capacity, settlement and pile apps)
+   ============================================================ */
+'use strict';
+
+/* ---------- numbers ---------- */
+function fmt(x, d) {
+  if (d === undefined) d = 2;
+  if (x === undefined || x === null || isNaN(x)) return '–';
+  if (!isFinite(x)) return '∞';
+  var s = Number(x).toFixed(d);
+  if (s === '-0' || /^-0\.0*$/.test(s)) s = s.slice(1);
+  return s;
+}
+function sig(x, n) { // significant-ish: adaptive decimals
+  var a = Math.abs(x);
+  if (a >= 1000) return fmt(x, 0);
+  if (a >= 100) return fmt(x, 1);
+  if (a >= 10) return fmt(x, 2);
+  return fmt(x, n === undefined ? 3 : n);
+}
+var DEG = Math.PI / 180;
+var tand = function (a) { return Math.tan(a * DEG); };
+var sind = function (a) { return Math.sin(a * DEG); };
+var cosd = function (a) { return Math.cos(a * DEG); };
+function interp(xs, ys, x) {
+  if (x <= xs[0]) return ys[0];
+  if (x >= xs[xs.length - 1]) return ys[ys.length - 1];
+  for (var i = 1; i < xs.length; i++) if (x <= xs[i]) {
+    var t = (x - xs[i - 1]) / (xs[i] - xs[i - 1]);
+    return ys[i - 1] + t * (ys[i] - ys[i - 1]);
+  }
+  return ys[ys.length - 1];
+}
+/* bisection solve f(x)=0 on [a,b] */
+function solve(f, a, b, tol) {
+  tol = tol || 1e-6; var fa = f(a), fb = f(b);
+  if (fa * fb > 0) { // try to expand
+    for (var k = 0; k < 40 && fa * fb > 0; k++) { b += (b - a); fb = f(b); }
+    if (fa * fb > 0) return NaN;
+  }
+  for (var i = 0; i < 80; i++) { var m = (a + b) / 2, fm = f(m); if (Math.abs(fm) < tol) return m; if (fa * fm < 0) { b = m; fb = fm; } else { a = m; fa = fm; } }
+  return (a + b) / 2;
+}
+
+/* ---------- math markup (mini TeX -> HTML) ----------
+   Supported: _x _{..} ^x ^{..} \frac{a}{b} \sqrt{a} \text{..} \unit{..} \hl{..}
+   \cdot \times \Rightarrow \to \le \ge \approx \ne \pm \sum \int \deg \inf \, \;
+   Single latin letters are italic, longer latin words (tan, sin, log, net, ult, max ...) upright.
+   Greek letters are typed directly. */
+var TEXSYM = { cdot: '·', times: '×', Rightarrow: '<span class="op">⇒</span>', to: '→', le: '≤', ge: '≥', approx: '≈', ne: '≠', pm: '±', sum: '<span class="big">Σ</span>', int: '<span class="big">∫</span>', deg: '°', inf: '∞', ',': '&thinsp;', ';': '&ensp;', lt: '&lt;', gt: '&gt;', gg: '≫', ll: '≪', prime: '′', leftarrow: '←', Leftrightarrow: '⇔', ldots: '…', pi: 'π', theta: 'θ', phi: 'φ', gamma: 'γ', sigma: 'σ', tau: 'τ', alpha: 'α', beta: 'β', delta: 'δ', Delta: 'Δ', nu: 'ν', mu: 'μ', eta: 'η', lambda: 'λ', rho: 'ρ', omega: 'ω', xi: 'ξ', Sigma: 'Σ', ' ': ' ', '%': '%', '{': '{', '}': '}', quad: '&ensp;', qquad: '&emsp;', tan: 'tan', sin: 'sin', cos: 'cos', cot: 'cot', log: 'log', ln: 'ln', exp: 'exp', arctan: 'arctan', max: 'max', min: 'min', e: 'e' };
+function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+function tex(src) {
+  var s = String(src), i = 0;
+  function readGroup() { // assumes s[i]=='{'
+    var depth = 0, start = i + 1;
+    for (; i < s.length; i++) { if (s[i] === '{') depth++; else if (s[i] === '}') { depth--; if (depth === 0) { var g = s.slice(start, i); i++; return g; } } }
+    return s.slice(start);
+  }
+  function readArg() { if (i >= s.length) return ''; if (s[i] === '{') return readGroup(); var c = s[i++]; return c; }
+  function parseRun(txt) { // latin letter runs
+    if (txt.length === 1) return '<i>' + txt + '</i>';
+    return txt;
+  }
+  var out = '';
+  while (i < s.length) {
+    var c = s[i];
+    if (c === '\\') {
+      i++;
+      var m = /^[A-Za-z]+/.exec(s.slice(i));
+      var name;
+      if (m) { name = m[0]; i += name.length; } else { name = s[i]; i++; }
+      if (name === 'frac') { var a = readArg(); var b = readArg(); out += '<span class="fr"><span>' + tex(a) + '</span><span>' + tex(b) + '</span></span>'; }
+      else if (name === 'sqrt') { var g = readArg(); out += '<span class="sq">√<span class="sqi">' + tex(g) + '</span></span>'; }
+      else if (name === 'text') { out += '<span class="txt">' + esc(readArg()) + '</span>'; }
+      else if (name === 'unit') { out += '<span class="u">' + esc(readArg()) + '</span>'; }
+      else if (name === 'hl') { out += '<span class="hl">' + tex(readArg()) + '</span>'; }
+      else if (name === 'b') { out += '<b>' + tex(readArg()) + '</b>'; }
+      else if (name === 'left' || name === 'right') { /* ignore, next char printed */ }
+      else if (TEXSYM[name] !== undefined) out += TEXSYM[name];
+      else out += esc('\\' + name);
+    } else if (c === '_' || c === '^') {
+      i++; var arg = readArg(); out += (c === '_' ? '<sub>' : '<sup>') + tex(arg) + (c === '_' ? '</sub>' : '</sup>');
+    } else if (c === '{') { out += tex(readGroup()); }
+    else if (c === '}') { i++; }
+    else if (/[A-Za-z]/.test(c)) { var mm = /^[A-Za-z]+/.exec(s.slice(i)); i += mm[0].length; out += parseRun(mm[0]); }
+    else { out += esc(c); i++; }
+  }
+  return out;
+}
+function m(src) { return '<span class="m">' + tex(src) + '</span>'; }
+function eq(src, why) { return '<div class="eq"><span class="m">' + tex(src) + '</span>' + (why ? '<span class="why">' + why + '</span>' : '') + '</div>'; }
+function eqs(list) { return '<div class="eqs">' + list.map(function (x) { return Array.isArray(x) ? eq(x[0], x[1]) : eq(x); }).join('') + '</div>'; }
+function p(html) { return '<p>' + html + '</p>'; }
+function note(html) { return '<div class="note">' + html + '</div>'; }
+function table(head, rows, hotRow) {
+  var h = '<div class="tbl-wrap"><table class="tbl"><thead><tr>' + head.map(function (x) { return '<th>' + x + '</th>'; }).join('') + '</tr></thead><tbody>';
+  rows.forEach(function (r, idx) { h += '<tr' + (idx === hotRow ? ' class="hot"' : '') + '>' + r.map(function (x) { return '<td>' + x + '</td>'; }).join('') + '</tr>'; });
+  return h + '</tbody></table></div>';
+}
+
+/* ---------- SVG helpers (all return strings) ---------- */
+var SVG = {
+  open: function (w, h, extra) {
+    return '<svg viewBox="0 0 ' + w + ' ' + h + '" role="img" ' + (extra || '') + '>' +
+      '<defs>' +
+      '<marker id="arL" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--load)"/></marker>' +
+      '<marker id="arW" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--accent-2)"/></marker>' +
+      '<marker id="arF" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="var(--fg)"/></marker>' +
+      '<marker id="dot" viewBox="0 0 10 10" refX="5" refY="5" markerWidth="5" markerHeight="5"><circle cx="5" cy="5" r="4" fill="var(--fg)"/></marker>' +
+      '<pattern id="hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="8" stroke="var(--fg)" stroke-width="1" opacity=".55"/></pattern>' +
+      '<pattern id="hatch2" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="10" stroke="var(--ok)" stroke-width="1.2"/></pattern>' +
+      '<pattern id="sandp" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="3" cy="3" r="1" fill="var(--soil-2)" opacity=".6"/><circle cx="10" cy="8" r="1" fill="var(--soil-2)" opacity=".6"/><circle cx="6" cy="12" r=".8" fill="var(--soil-2)" opacity=".6"/></pattern>' +
+      '<pattern id="clayp" width="16" height="8" patternUnits="userSpaceOnUse"><line x1="0" y1="4" x2="10" y2="4" stroke="var(--soil-2)" stroke-width="1" opacity=".5"/></pattern>' +
+      '<linearGradient id="soilg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--soil)"/><stop offset="1" stop-color="var(--soil-2)"/></linearGradient>' +
+      '<linearGradient id="clayg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--clay)"/><stop offset="1" stop-color="var(--soil-2)"/></linearGradient>' +
+      '<linearGradient id="rockg" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--rock)"/><stop offset="1" stop-color="#2b2b2b"/></linearGradient>' +
+      '</defs>';
+  },
+  close: function () { return '</svg>'; },
+  /* soil mass with gradient; type: 'sand' | 'clay' | 'rock' */
+  soil: function (x, y, w, h, type, attrs) {
+    var fill = type === 'clay' ? 'url(#clayg)' : type === 'rock' ? 'url(#rockg)' : 'url(#soilg)';
+    var pat = type === 'clay' ? 'url(#clayp)' : type === 'rock' ? '' : 'url(#sandp)';
+    return '<g ' + (attrs || '') + '><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + fill + '"/>' + (pat ? '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + pat + '"/>' : '') + '</g>';
+  },
+  /* ground surface line with little hatch ticks on the right side */
+  ground: function (x1, x2, y, tickSide) {
+    var s = '<line class="ground" x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '"/>';
+    var from = tickSide === 'left' ? x1 : x2 - 60, to = tickSide === 'left' ? x1 + 60 : x2;
+    for (var x = from + 4; x < to; x += 8) s += '<line class="thin" x1="' + x + '" y1="' + y + '" x2="' + (x - 5) + '" y2="' + (y + 6) + '"/>';
+    return s;
+  },
+  rect: function (x, y, w, h, cls, attrs) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" class="' + (cls || '') + '" ' + (attrs || '') + '/>'; },
+  poly: function (pts, cls, attrs) { return '<polygon points="' + pts.map(function (p) { return p.join(','); }).join(' ') + '" class="' + (cls || '') + '" ' + (attrs || '') + '/>'; },
+  line: function (x1, y1, x2, y2, cls, attrs) { return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" class="' + (cls || 'thin') + '" ' + (attrs || '') + '/>'; },
+  circle: function (cx, cy, r, cls, attrs) { return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" class="' + (cls || '') + '" ' + (attrs || '') + '/>'; },
+  text: function (x, y, str, cls, attrs) { return '<text x="' + x + '" y="' + y + '" class="' + (cls || '') + '" ' + (attrs || '') + '>' + str + '</text>'; },
+  /* arrow with head; kind: 'load' (red) | 'weight' (blue) | 'fg' */
+  arrow: function (x1, y1, x2, y2, kind, attrs, width) {
+    var mk = kind === 'load' ? 'arL' : kind === 'weight' ? 'arW' : 'arF';
+    var stroke = kind === 'load' ? 'var(--load)' : kind === 'weight' ? 'var(--accent-2)' : 'var(--fg)';
+    return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + stroke + '" stroke-width="' + (width || 3) + '" marker-end="url(#' + mk + ')" ' + (attrs || '') + '/>';
+  },
+  /* dimension line between two points with text; off = offset perpendicular (px). horizontal if y1==y2 */
+  dim: function (x1, y1, x2, y2, label, off, attrs) {
+    off = off || 0;
+    var horiz = Math.abs(y1 - y2) < 0.01;
+    var s = '<g class="dimg" ' + (attrs || '') + '>';
+    if (horiz) {
+      var y = y1 + off;
+      s += '<line class="dimline" x1="' + x1 + '" y1="' + y1 + '" x2="' + x1 + '" y2="' + (y + (off > 0 ? 4 : -4)) + '"/><line class="dimline" x1="' + x2 + '" y1="' + y2 + '" x2="' + x2 + '" y2="' + (y + (off > 0 ? 4 : -4)) + '"/>';
+      s += '<line class="dimline" x1="' + x1 + '" y1="' + y + '" x2="' + x2 + '" y2="' + y + '" marker-start="url(#arF)" marker-end="url(#arF)"/>';
+      s += '<text x="' + ((x1 + x2) / 2) + '" y="' + (y + (off >= 0 ? 15 : -5)) + '" text-anchor="middle" class="math">' + label + '</text>';
+    } else {
+      var x = x1 + off;
+      s += '<line class="dimline" x1="' + x1 + '" y1="' + y1 + '" x2="' + (x + (off > 0 ? 4 : -4)) + '" y2="' + y1 + '"/><line class="dimline" x1="' + x2 + '" y1="' + y2 + '" x2="' + (x + (off > 0 ? 4 : -4)) + '" y2="' + y2 + '"/>';
+      s += '<line class="dimline" x1="' + x + '" y1="' + y1 + '" x2="' + x + '" y2="' + y2 + '" marker-start="url(#arF)" marker-end="url(#arF)"/>';
+      s += '<text x="' + (x + (off >= 0 ? 6 : -6)) + '" y="' + ((y1 + y2) / 2 + 4) + '" text-anchor="' + (off >= 0 ? 'start' : 'end') + '" class="math">' + label + '</text>';
+    }
+    return s + '</g>';
+  },
+  /* uniformly distributed load arrows pointing down onto y from y-len, spanning x1..x2 */
+  udl: function (x1, x2, y, len, label, attrs, n) {
+    n = n || Math.max(3, Math.round((x2 - x1) / 18));
+    var s = '<g class="udl" ' + (attrs || '') + '><line class="load-line" x1="' + x1 + '" y1="' + (y - len) + '" x2="' + x2 + '" y2="' + (y - len) + '"/>';
+    for (var k = 0; k <= n; k++) { var x = x1 + (x2 - x1) * k / n; s += '<line x1="' + x + '" y1="' + (y - len) + '" x2="' + x + '" y2="' + (y - 2) + '" stroke="var(--load)" stroke-width="1.6" marker-end="url(#arL)"/>'; }
+    if (label) s += '<text x="' + ((x1 + x2) / 2) + '" y="' + (y - len - 6) + '" text-anchor="middle" class="lbl-load math">' + label + '</text>';
+    return s + '</g>';
+  },
+  /* horizontal pressure diagram (triangle/trapezoid) acting on face at x, from yTop..yBot, widths wTop..wBot (px) extending to the right (side=+1) or left (-1) */
+  pressure: function (x, yTop, yBot, wTop, wBot, side, cls, attrs, nArrows) {
+    side = side || 1; cls = cls || 'load-fill';
+    var pts = [[x, yTop], [x + side * wTop, yTop], [x + side * wBot, yBot], [x, yBot]];
+    var s = '<g ' + (attrs || '') + '>' + SVG.poly(pts, cls);
+    var n = nArrows === undefined ? 5 : nArrows;
+    for (var k = 1; k <= n; k++) { var t = k / (n + 1), y = yTop + (yBot - yTop) * t, w = wTop + (wBot - wTop) * t; if (w > 6) s += '<line x1="' + (x + side * w) + '" y1="' + y + '" x2="' + (x + side * 3) + '" y2="' + y + '" stroke="var(--load)" stroke-width="1.3" marker-end="url(#arL)"/>'; }
+    return s + '</g>';
+  },
+  /* water table symbol at (x,y) */
+  wt: function (x, y) {
+    return '<g class="wtsym"><polygon points="' + (x - 7) + ',' + (y - 10) + ' ' + (x + 7) + ',' + (y - 10) + ' ' + x + ',' + y + '" fill="var(--water)"/><line x1="' + (x - 10) + '" y1="' + (y + 3) + '" x2="' + (x + 10) + '" y2="' + (y + 3) + '" stroke="var(--water)" stroke-width="1.5"/><line x1="' + (x - 6) + '" y1="' + (y + 7) + '" x2="' + (x + 6) + '" y2="' + (y + 7) + '" stroke="var(--water)" stroke-width="1.5"/></g>';
+  },
+  /* label with small background box */
+  label: function (x, y, str, cls, anchor) {
+    return '<text x="' + x + '" y="' + y + '" text-anchor="' + (anchor || 'middle') + '" class="' + (cls || '') + '" paint-order="stroke" stroke="var(--panel-2)" stroke-width="4" stroke-linejoin="round">' + str + '</text>';
+  },
+  point: function (x, y, name, dx, dy) { return SVG.circle(x, y, 5, 'pt') + (name ? SVG.text(x + (dx === undefined ? 8 : dx), y + (dy === undefined ? 5 : dy), name, 'lbl-load') : ''); }
+};
+/* sub/sup inside SVG text: returns tspans */
+function tsub(base, sub) { return base + '<tspan dy="4" font-size="10">' + sub + '</tspan><tspan dy="-4"> </tspan>'; }
+
+/* ---------- Geotechnical functions ---------- */
+var GEO = {
+  Ka: function (phi) { return Math.pow(tand(45 - phi / 2), 2); },
+  Kp: function (phi) { return Math.pow(tand(45 + phi / 2), 2); },
+  /* Prandtl/Reissner Nq, Nc; Hansen Nγ (used in exercises 6-8) */
+  Nq: function (phi) { if (phi <= 0) return 1; return Math.exp(Math.PI * tand(phi)) * Math.pow(tand(45 + phi / 2), 2); },
+  Nc: function (phi) { if (phi <= 0.001) return 5.14; return (GEO.Nq(phi) - 1) / tand(phi); },
+  Ng: function (phi) { if (phi <= 0) return 0; return 1.5 * (GEO.Nq(phi) - 1) * tand(phi); },         // Hansen
+  NgVesic: function (phi) { if (phi <= 0) return 0; return 2 * (GEO.Nq(phi) + 1) * tand(phi); },
+  /* DIN 4017 table as printed in the course notes (rounded). Nb(DIN) = (Nd-1) tanφ */
+  DIN_TAB: [[0, 5.0, 1.0, 0.0], [5, 6.5, 1.5, 0.0], [10, 8.5, 2.5, 0.5], [15, 11.0, 4.0, 1.0], [20, 15.0, 6.5, 2.0], [22.5, 17.5, 8.0, 3.0], [25, 20.5, 10.5, 4.5], [27.5, 25.0, 14.0, 7.0], [30, 30.0, 18.0, 10.0], [32.5, 37.0, 25.0, 15.0], [35, 46.0, 33.0, 23.0], [37.5, 58.0, 46.0, 34.0], [40, 75.0, 64.0, 53.0], [42.5, 99.0, 92.0, 83.0]],
+  din: function (phi) { // interpolated from the course table
+    var t = GEO.DIN_TAB, xs = t.map(function (r) { return r[0]; });
+    return { Nc: interp(xs, t.map(function (r) { return r[1]; }), phi), Nd: interp(xs, t.map(function (r) { return r[2]; }), phi), Nb: interp(xs, t.map(function (r) { return r[3]; }), phi) };
+  },
+  dinExact: function (phi) { var Nd = GEO.Nq(phi); return { Nc: phi > 0 ? (Nd - 1) / tand(phi) : 5.14, Nd: Nd, Nb: phi > 0 ? (Nd - 1) * tand(phi) : 0 }; },
+  /* DIN 4017 shape factors: shape 'strip' | 'rect' | 'square' */
+  dinShape: function (shape, B, L, phi, Nd) {
+    if (shape === 'strip') return { Vc: 1, Vd: 1, Vb: 1 };
+    var BL = shape === 'square' ? 1 : B / L;
+    var Vd = 1 + BL * sind(phi), Vb = 1 - 0.3 * BL;
+    var Vc = phi > 0 ? (Vd * Nd - 1) / (Nd - 1) : 1 + 0.2 * BL;
+    return { Vc: Vc, Vd: Vd, Vb: Vb };
+  },
+  /* Steinbrenner influence factor f for corner of flexible rectangle L×B on layer of depth z, ν=0.3 : ρ = qB/E · f */
+  steinF: function (LB, zB, nu) {
+    nu = nu === undefined ? 0.3 : nu;
+    var mm = LB, n = zB;
+    if (n <= 0) return 0;
+    var s1 = Math.sqrt(mm * mm + 1), s2 = Math.sqrt(mm * mm + n * n), s3 = Math.sqrt(mm * mm + n * n + 1), s4 = Math.sqrt(1 + n * n);
+    var A0 = mm * Math.log((1 + s1) * s2 / (mm * (1 + s3)));
+    var A1 = Math.log((mm + s1) * s4 / (mm + s3));
+    var F1 = (A0 + A1) / Math.PI;
+    var F2 = (n / (2 * Math.PI)) * Math.atan(mm / (n * s3));
+    var Is = F1 + (1 - 2 * nu) / (1 - nu) * F2;
+    return (1 - nu * nu) * Is;
+  },
+  /* Corner factor for a layer of thickness H whose modulus increases linearly with depth:
+     E(z) = E0 (1 + K z/H), K = (E_H - E0)/E0, ρ = q B f / E0, read at z/B = H/B.
+     Vertical strains of the homogeneous half-space integrated over the layer (Steinbrenner assumption):
+     f_K(n) = f(n)/(1+K) + (K/n) ∫0..n f(ζ)/(1+Kζ/n)² dζ, with ζ = n t² and Simpson's rule. K = 0 gives steinF. */
+  steinFK: function (LB, zB, K, nu) {
+    nu = nu === undefined ? 0.3 : nu;
+    if (zB <= 0) return 0;
+    var f0 = GEO.steinF(LB, zB, nu);
+    if (!K) return f0;
+    var N = 96, h = 1 / N, sum = 0;
+    for (var i = 1; i <= N; i++) { var t = i * h, w = i === N ? 1 : (i % 2 ? 4 : 2); sum += w * GEO.steinF(LB, zB * t * t, nu) * 2 * t / Math.pow(1 + K * t * t, 2); }
+    return f0 / (1 + K) + K * sum * h / 3;
+  },
+  /* Schmertmann strain influence factor: type 'strip' (L/B>=10) or 'square'. z measured from foundation level, B width */
+  schIz: function (z, B, type, Izmax) {
+    Izmax = Izmax === undefined ? 0.6 : Izmax;
+    var zp = type === 'strip' ? B : B / 2, zmax = type === 'strip' ? 4 * B : 2 * B, I0 = type === 'strip' ? 0.2 : 0.1;
+    if (z < 0) return 0;
+    if (z <= zp) return I0 + (Izmax - I0) * z / zp;
+    if (z <= zmax) return Izmax * (zmax - z) / (zmax - zp);
+    return 0;
+  },
+  /* Terzaghi one-dimensional consolidation: average degree U -> Tv */
+  Tv: function (U) { if (U < 0.6) return Math.PI / 4 * U * U; return -0.933 * Math.log10(1 - U) - 0.085; },
+  U: function (Tv) { return solve(function (u) { return GEO.Tv(u) - Tv; }, 0.0001, 0.9999, 1e-7); },
+  /* Converse–Labarre group efficiency: n rows (m x n piles), D diameter, s spacing */
+  converseLabarre: function (mRows, nCols, D, s) { var th = Math.atan(D / s) / DEG; return 1 - th * ((nCols - 1) * mRows + (mRows - 1) * nCols) / (90 * mRows * nCols); }
+};
+
+/* ---------- charts (SVG strings) ---------- */
+var CHART = {
+  /* Steinbrenner chart: f (x) vs z/B (y, downward). points: [{LB, zB, name}] marked.
+     opts.K / opts.nu: nomograph for linearly increasing modulus E(z) = E0(1 + K z/H) and Poisson ratio ν
+     (GEO.steinFK); without them the classic chart (K = 0, ν = 0.3) is drawn. opts.dec: decimals of the readings. */
+  steinbrenner: function (points, opts) {
+    opts = opts || {}; var W = 520, H = 420, L = 60, T = 40, R = 30, Bm = 30, pw = W - L - R, ph = H - T - Bm;
+    var gen = opts.K !== undefined || opts.nu !== undefined, Kk = opts.K || 0, nu = opts.nu === undefined ? 0.3 : opts.nu, dec = opts.dec || 2;
+    var F = function (LB, zB) { return gen ? GEO.steinFK(LB, zB, Kk, nu) : GEO.steinF(LB, zB); };
+    var curves = [1, 2, 3, 5, 10, 1000];
+    var names = ['1', '2', '3', '5', '10', '∞'];
+    var fmax = 1.0, fstep = 0.1, zmax = 20;
+    if (gen) { // horizontal axis fitted to the family of curves
+      var top = 0; curves.forEach(function (LB) { top = Math.max(top, F(LB, zmax)); });
+      (points || []).forEach(function (pt) { top = Math.max(top, F(pt.LB, pt.zB)); });
+      top *= 1.02; var cand = [0.02, 0.05, 0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50];
+      for (var ck = 0; ck < cand.length; ck++) { fstep = cand[ck]; if (top / fstep <= 10) break; }
+      fmax = Math.max(fstep, Math.ceil(top / fstep - 1e-9) * fstep);
+    }
+    var X = function (f) { return L + f / fmax * pw; }, Y = function (zB) { return T + zB / zmax * ph; };
+    var s = SVG.open(W, H, 'aria-label="Διάγραμμα Steinbrenner: συντελεστής f συναρτήσει z/B για διάφορα L/B' + (gen ? ', K = ' + fmt(Kk, 2) + ', ν = ' + fmt(nu, 1) : '') + '"');
+    for (var k = 0; k * fstep <= fmax + 1e-9; k++) { var f = k * fstep; s += SVG.line(X(f), T, X(f), T + ph, 'grid') + SVG.text(X(f), T - 8, fmt(f, fstep < 0.1 ? 2 : fstep < 1 ? 1 : 0), 'lbl-muted', 'text-anchor="middle"'); }
+    for (var z = 0; z <= 20; z += 2) s += SVG.line(L, Y(z), L + pw, Y(z), 'grid') + SVG.text(L - 8, Y(z) + 4, z, 'lbl-muted', 'text-anchor="end"');
+    s += SVG.rect(L, T, pw, ph, 'thin');
+    s += SVG.text(L + pw / 2, 14, 'συντελεστής επιρροής f' + (gen ? '  (K = ' + fmt(Kk, 2) + ',  ν = ' + fmt(nu, 1) + ')' : ''), gen ? 'lbl-load' : 'lbl-muted', 'text-anchor="middle"');
+    s += '<text transform="translate(16,' + (T + ph / 2) + ') rotate(-90)" text-anchor="middle" class="lbl-muted">' + (gen ? 'z/B′ = H/B′' : 'z/B') + '</text>';
+    var path = function (LB) { var d = ''; for (var zB = 0.05; zB <= zmax + 0.001; zB += 0.25) { var fv = F(LB, zB); d += (d ? ' L' : 'M') + X(fv).toFixed(1) + ',' + Y(zB).toFixed(1); } return d; };
+    var isStd = function (LB) { return LB >= 50 || curves.some(function (c) { return Math.abs(c - LB) < 0.01; }); };
+    curves.forEach(function (LB, ci) {
+      var hot = points && points.some(function (pt) { return Math.abs(pt.LB - LB) < 0.01 || (LB === 1000 && pt.LB >= 50); });
+      s += '<path d="' + path(LB) + '" class="curve ' + (hot ? 'hot' : 'muted') + '"/>';
+      var zl = zmax - 1.2 * ci, fe = F(LB, zl);
+      var lx = X(fe) + (ci >= 3 ? 34 : 0); if (gen) lx = Math.min(lx, L + pw - 30);   // keep the label inside the frame
+      s += SVG.label(lx, Y(zl) - 6, 'L/B=' + names[ci], 'lbl-muted', 'middle');
+    });
+    // interpolated curve (dashed) through each reading whose L/B is not one of the drawn curves
+    if (gen) (points || []).forEach(function (pt) { if (!isStd(pt.LB)) s += '<path d="' + path(pt.LB) + '" class="curve hot" style="stroke-width:1.6;stroke-dasharray:6 4"/>'; });
+    var placed = [];
+    (points || []).forEach(function (pt) {
+      var fv = F(pt.LB, pt.zB), txt = (pt.name ? pt.name + ': ' : '') + 'f = ' + fmt(fv, dec), lx = X(fv) + 10, ly = Y(pt.zB) - 8;
+      // keep the labels of neighbouring readings apart
+      [-8, 20, -24, 36].some(function (dy) { ly = Y(pt.zB) + dy; return !placed.some(function (q) { return Math.abs(q[1] - ly) < 15 && Math.abs(q[0] - lx) < 8 * txt.length; }); });
+      placed.push([lx, ly]);
+      s += '<path d="M' + X(0) + ',' + Y(pt.zB) + ' L' + X(fv) + ',' + Y(pt.zB) + ' L' + X(fv) + ',' + Y(0) + '" class="guide a-draw"/>';
+      s += SVG.circle(X(fv), Y(pt.zB), 6, 'marker a-pop');
+      s += SVG.label(lx, ly, txt, 'lbl-load', 'start');
+    });
+    return s + SVG.close();
+  },
+  /* Schmertmann Iz diagram for a given B/type with layer midpoints marked. layers: [{z, Iz}] (z from foundation level) */
+  schmertmann: function (B, type, Izmax, layers, zTop) {
+    zTop = zTop || 0; var zmax = type === 'strip' ? 4 * B : 2 * B;
+    var W = 360, H = 420, L = 50, T = 36, R = 20, Bm = 24, pw = W - L - R, ph = H - T - Bm;
+    var X = function (I) { return L + I / 0.8 * pw; }, Y = function (z) { return T + z / zmax * ph; };
+    var s = SVG.open(W, H, 'aria-label="Διάγραμμα συντελεστή επιρροής παραμόρφωσης Iz κατά Schmertmann"');
+    for (var I = 0; I <= 0.81; I += 0.2) s += SVG.line(X(I), T, X(I), T + ph, 'grid') + SVG.text(X(I), T - 8, fmt(I, 1), 'lbl-muted', 'text-anchor="middle"');
+    var steps = Math.min(12, Math.round(zmax)); var dz = zmax / steps;
+    for (var z = 0; z <= zmax + 0.001; z += dz) s += SVG.line(L, Y(z), L + pw, Y(z), 'grid') + SVG.text(L - 6, Y(z) + 4, fmt(z + zTop, 1), 'lbl-muted', 'text-anchor="end"');
+    s += SVG.rect(L, T, pw, ph, 'thin');
+    s += SVG.text(L + pw / 2, 12, tsub('I', 'z'), 'lbl-muted', 'text-anchor="middle"');
+    s += '<text transform="translate(12,' + (T + ph / 2) + ') rotate(-90)" text-anchor="middle" class="lbl-muted">βάθος z (m)</text>';
+    var zp = type === 'strip' ? B : B / 2, I0 = type === 'strip' ? 0.2 : 0.1;
+    s += '<path d="M' + X(I0) + ',' + Y(0) + ' L' + X(Izmax) + ',' + Y(zp) + ' L' + X(0) + ',' + Y(zmax) + '" class="curve hot a-draw"/>';
+    s += SVG.label(X(Izmax) - 8, Y(zp) + 18, tsub('I', 'z,max') + '=' + fmt(Izmax, 2) + ', z=' + fmt(zp, 1) + ' m', 'lbl-load', 'end');
+    s += SVG.label(X(0) + 6, Y(zmax) - 6, (type === 'strip' ? '4B' : '2B') + ' = ' + fmt(zmax, 1) + ' m', 'lbl-muted', 'start');
+    (layers || []).forEach(function (ly, i) {
+      s += SVG.line(L, Y(ly.z), X(ly.Iz), Y(ly.z), 'guide');
+      s += SVG.circle(X(ly.Iz), Y(ly.z), 5, 'marker a-pop', 'style="animation-delay:' + (i * 0.12) + 's"');
+      s += SVG.label(X(ly.Iz) + 8, Y(ly.z) + 4, fmt(ly.Iz, 2), 'lbl-muted', 'start');
+    });
+    return s + SVG.close();
+  },
+  /* Consolidation U–Tv curve with a point */
+  consol: function (Umark) {
+    var W = 420, H = 260, L = 50, T = 20, R = 20, Bm = 36, pw = W - L - R, ph = H - T - Bm;
+    var X = function (Tv) { return L + Tv / 1.2 * pw; }, Y = function (U) { return T + U * ph; };
+    var s = SVG.open(W, H, 'aria-label="Καμπύλη βαθμού στερεοποίησης U – χρονικού παράγοντα Tv"');
+    for (var t = 0; t <= 1.21; t += 0.2) s += SVG.line(X(t), T, X(t), T + ph, 'grid') + SVG.text(X(t), T + ph + 14, fmt(t, 1), 'lbl-muted', 'text-anchor="middle"');
+    for (var u = 0; u <= 1.01; u += 0.2) s += SVG.line(L, Y(u), L + pw, Y(u), 'grid') + SVG.text(L - 6, Y(u) + 4, fmt(u * 100, 0) + '%', 'lbl-muted', 'text-anchor="end"');
+    s += SVG.rect(L, T, pw, ph, 'thin');
+    s += SVG.text(L + pw / 2, H - 4, tsub('T', 'v'), 'lbl-muted', 'text-anchor="middle"');
+    var d = '';
+    for (var U = 0; U <= 0.995; U += 0.01) { var Tv = GEO.Tv(U); if (Tv > 1.2) break; d += (d ? ' L' : 'M') + X(Tv).toFixed(1) + ',' + Y(U).toFixed(1); }
+    s += '<path d="' + d + '" class="curve hot a-draw"/>';
+    if (Umark) { var Tm = GEO.Tv(Umark); s += '<path d="M' + X(0) + ',' + Y(Umark) + ' L' + X(Tm) + ',' + Y(Umark) + ' L' + X(Tm) + ',' + Y(1) + '" class="guide"/>' + SVG.circle(X(Tm), Y(Umark), 6, 'marker a-pop') + SVG.label(X(Tm) + 8, Y(Umark) - 8, 'U=' + fmt(Umark * 100, 0) + '% → ' + tsub('T', 'v') + '=' + fmt(Tm, 3), 'lbl-load', 'start'); }
+    return s + SVG.close();
+  }
+};
+
+/* ---------- tables ---------- */
+var TABLES = {
+  din1: function (phiHot) {
+    var rows = GEO.DIN_TAB.map(function (r) { return [fmt(r[0], 1) + '°', fmt(r[1], 1), fmt(r[2], 1), fmt(r[3], 1)]; });
+    var hot = -1; GEO.DIN_TAB.forEach(function (r, i) { if (phiHot !== undefined && Math.abs(r[0] - phiHot) < 0.01) hot = i; });
+    return table(['φ', m('N_c'), m('N_d'), m('N_b')], rows, hot);
+  },
+  din2: function () {
+    return table(['Μορφή θεμελίου', m('V_c\\;(φ≠0)'), m('V_c\\;(φ=0)'), m('V_d'), m('V_b')], [
+      ['Λωρίδα', '1.0', '1.0', '1.0', '1.0'],
+      ['Ορθογώνιο', m('\\frac{V_d N_d - 1}{N_d - 1}'), m('1+0.2\\,\\frac{B}{L}'), m('1+\\frac{B}{L}\\sin φ'), m('1-0.3\\,\\frac{B}{L}')],
+      ['Τετράγωνο ή κύκλος', m('\\frac{V_d N_d - 1}{N_d - 1}'), '1.2', m('1+\\sin φ'), '0.7']]);
+  },
+  din3: function () {
+    return table(['Συντελεστής', 'φ ≠ 0 (DIN 4017)', 'φ = 0'], [
+      [m('K_d'), m('\\left(1-0.7\\,\\frac{H}{V+B\'L\'c\\cot φ}\\right)^3'), '1'],
+      [m('K_b'), m('\\left(1-\\frac{H}{V+B\'L\'c\\cot φ}\\right)^3'), '–'],
+      [m('K_c'), m('K_d-\\frac{1-K_d}{N_d-1}'), m('0.5+0.5\\sqrt{1-\\frac{H}{B\'L\'c}}')]]);
+  },
+  bc: function (phiHot) {
+    var phis = [0, 5, 10, 15, 20, 25, 30, 32, 35, 40];
+    var rows = phis.map(function (f) { return [f + '°', fmt(GEO.Nc(f), 1), fmt(GEO.Nq(f), 1), fmt(GEO.Ng(f), 1)]; });
+    var hot = phis.indexOf(phiHot);
+    return table(['φ', m('N_c'), m('N_q'), m('N_γ') + ' (Hansen)'], rows, hot);
+  }
+};
+
+/* ---------- App shell ---------- */
+var APP = (function () {
+  var cfg, state = { exId: null, step: 0, params: {}, playing: null, showAll: false };
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+  function el(html) { var d = document.createElement('div'); d.innerHTML = html.trim(); return d.firstChild; }
+  function ex() { return cfg.exercises.filter(function (e) { return e.id === state.exId; })[0]; }
+  function params(e) { var pr = {}; (e.givens || []).forEach(function (g) { pr[g.key] = (state.params[e.id] && state.params[e.id][g.key] !== undefined) ? state.params[e.id][g.key] : g.value; }); return pr; }
+  function defaults(e) { var pr = {}; (e.givens || []).forEach(function (g) { pr[g.key] = g.value; }); return pr; }
+
+
+  var UOP_LOGO = 'data:image/jpeg;base64,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';
+  var UOP_ICON = '<svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true"><path d="M2 12h4l3-8 4 16 3-8h6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  function banner(c) {
+    return '<header class="uhead"><img class="ulogo" src="' + UOP_LOGO + '" alt="Πανεπιστήμιο Πατρών">' +
+      '<div class="udept"><b>Τμήμα Πολιτικών Μηχανικών</b><span>Αν. Καθ. Παναγιώτης Πελέκης</span></div>' +
+      '<div class="uapp"><h1>' + UOP_ICON + ' ' + (c.appName || ('Διαδραστικές Ασκήσεις · ' + c.title)) + ' <span class="ver">' + (c.version || 'v1.0') + '</span></h1>' +
+      '<p>' + (c.desc || c.subtitle) + '</p></div></header>';
+  }
+  function init(c) {
+    if (!document.body) { document.addEventListener('DOMContentLoaded', function () { init(c); }); return; }
+    cfg = c;
+    document.title = c.title + ' · Θεμελιώσεις';
+    document.body.appendChild(el(banner(c)));
+    var app = el('<div class="app"><aside class="side" id="side"></aside><main class="main" id="main"></main></div>');
+    document.body.appendChild(app);
+    renderSide();
+    var h = location.hash.replace('#', ''), stepReq = 0;
+    var sm = /^(.*)-step(\d+)$/.exec(h); if (sm) { h = sm[1]; stepReq = parseInt(sm[2]); }
+    var first = cfg.exercises[0].id;
+    go(cfg.exercises.some(function (e) { return e.id === h; }) || h === 'sheet' ? h : first);
+    if (stepReq > 0 && ex()) { state.step = Math.min(stepReq, ex().steps.length); renderMain(false); }
+    window.addEventListener('hashchange', function () {
+      var id = location.hash.replace('#', ''), mm = /^(.*)-step(\d+)$/.exec(id); if (mm) id = mm[1];
+      if (id && id !== state.exId) go(id);
+      if (mm && ex()) { state.step = Math.min(parseInt(mm[2]), ex().steps.length); renderMain(false); }
+    });
+    document.addEventListener('click', function (ev) { var sd = $('#side'); if (sd && sd.classList.contains('open') && !sd.contains(ev.target) && !ev.target.closest('#menu')) sd.classList.remove('open'); });
+    document.addEventListener('keydown', function (ev) {
+      if (ev.target.tagName === 'INPUT' || ev.target.tagName === 'TEXTAREA') return;
+      if (ev.key === ' ' && (ev.target.tagName === 'BUTTON' || ev.target.tagName === 'A')) return;
+      if (ev.key === 'ArrowRight' || ev.key === ' ') { ev.preventDefault(); next(); }
+      else if (ev.key === 'ArrowLeft') { ev.preventDefault(); prev(); }
+      else if (ev.key === 'p' || ev.key === 'P' || ev.key === 'π') togglePresent();
+      else if (ev.key === 'f' || ev.key === 'F' || ev.key === 'φ') fullscreen();
+      else if (ev.key === 'Home') { state.step = 0; renderMain(false); }
+      else if (ev.key === 'End') { state.step = ex().steps.length; renderMain(false); }
+    });
+  }
+  function renderSide() {
+    var s = '<div class="brand"><div class="uni">' + cfg.uni + '</div><h1>' + cfg.title + '</h1><div class="sub">' + cfg.subtitle + '</div></div><nav class="nav">';
+    var grp = null;
+    cfg.exercises.forEach(function (e) {
+      if (e.group && e.group !== grp) { grp = e.group; s += '<div class="grp">' + grp + '</div>'; }
+      s += '<button data-id="' + e.id + '"><span class="n">' + e.num + '</span><span class="t">' + e.title + '</span></button>';
+    });
+    s += '<div class="grp">Αναφορά</div><button data-id="sheet"><span class="n">Σ</span><span class="t">Τυπολόγιο, πίνακες και διαγράμματα</span></button>';
+    s += '</nav><div class="foot">' + cfg.footer + '<br>Πλήκτρα: <span class="kbd">→</span> επόμενο βήμα, <span class="kbd">←</span> πίσω, <span class="kbd">P</span> παρουσίαση, <span class="kbd">F</span> πλήρης οθόνη</div>';
+    $('#side').innerHTML = s;
+    $('#side').addEventListener('click', function (ev) { var b = ev.target.closest('button[data-id]'); if (b) { go(b.dataset.id); $('#side').classList.remove('open'); } });
+  }
+  function go(id) {
+    state.exId = id; state.step = 0; state.showAll = false; stopPlay();
+    try { if (location.hash !== '#' + id) history.replaceState(null, '', '#' + id); } catch (e) { }
+    document.querySelectorAll('.nav button').forEach(function (b) { b.classList.toggle('on', b.dataset.id === id); });
+    renderMain(true);
+    window.scrollTo({ top: 0 });
+  }
+  function topbar(extra) {
+    return '<div class="topbar"><button class="btn menu-btn" id="menu">☰ Ασκήσεις</button>' + (extra || '') + '<span class="sp"></span>' +
+      '<button class="btn" id="present" title="Μεγαλύτερη γραμματοσειρά, χωρίς πλαϊνό μενού (P)">▣ Παρουσίαση</button>' +
+      '<button class="btn" id="theme" title="Εναλλαγή φωτεινού/σκούρου θέματος">◐ Θέμα</button></div>';
+  }
+  function wireTop() {
+    $('#menu').onclick = function () { $('#side').classList.toggle('open'); };
+    $('#present').onclick = togglePresent;
+    $('#theme').onclick = function () { var r = document.documentElement; var dark = r.getAttribute('data-theme') === 'dark' || (!r.getAttribute('data-theme') && matchMedia('(prefers-color-scheme: dark)').matches); r.setAttribute('data-theme', dark ? 'light' : 'dark'); };
+  }
+  function togglePresent() { document.body.classList.toggle('present'); }
+  function fullscreen() { var d = document.documentElement; try { if (!document.fullscreenElement && d.requestFullscreen) d.requestFullscreen().catch(function () { }); else if (document.exitFullscreen) document.exitFullscreen(); } catch (e) { } }
+
+  function renderMain(full, scroll) {
+    if (state.exId === 'sheet') { renderSheet(); return; }
+    var e = ex(); if (!e) return;
+    var pr = params(e), r = e.compute(pr);
+    var main = $('#main');
+    if (full || !$('#exroot')) {
+      var h = topbar('<span class="tags">' + (e.tags || []).map(function (t) { return '<span class="tag">' + t + '</span>'; }).join('') + '</span>');
+      h += '<div id="exroot"><div class="ex-head"><span class="kicker">' + cfg.kicker + ' · ' + (e.source || '') + '</span><h2>' + e.num + '. ' + e.title + '</h2></div>';
+      h += '<div class="grid2"><div style="display:grid;gap:16px;min-width:0"><div class="card"><h3>Εκφώνηση</h3><div class="statement">' + e.statement + '</div></div>' +
+        '<div class="card"><h3>Σχήμα</h3><div class="fig-wrap"><div class="fig" id="fig"></div><div class="fig-cap" id="figcap"></div></div></div></div>' +
+        '<div style="display:grid;gap:16px;min-width:0"><div class="card"><h3>Δεδομένα – πειραματιστείτε</h3><div class="sliders" id="sliders"></div><div class="sliders-foot"><button class="btn" id="reset">↺ Τιμές εκφώνησης</button><span>Αλλάξτε τα δεδομένα και δείτε πώς αλλάζει κάθε βήμα της λύσης.</span></div></div>' +
+        '<div class="card" id="quick"><h3>Βασικά μεγέθη</h3><div id="quickbody"></div></div></div></div>';
+      h += '<div class="card"><div class="steps-head"><h3 style="margin:0">Λύση βήμα-βήμα</h3><span class="sp" style="flex:1"></span><span class="prog" id="prog"></span>' +
+        '<button class="btn" id="prev">← Πίσω</button><button class="btn primary" id="next">Επόμενο βήμα →</button><button class="btn" id="play">▶ Αυτόματα</button><button class="btn" id="all">Όλα</button></div>' +
+        '<div class="progress"><i id="pbar"></i></div><div class="steps" id="steps"></div><div id="resbox"></div></div>';
+      h += '</div>';
+      main.innerHTML = h;
+      wireTop();
+      renderSliders(e);
+      $('#reset').onclick = function () { state.params[e.id] = {}; renderSliders(e); renderMain(false); };
+      $('#prev').onclick = prev; $('#next').onclick = next;
+      $('#play').onclick = function () { if (state.playing) stopPlay(); else { if (state.step >= e.steps.length) state.step = 0; state.playing = setInterval(function () { if (state.step >= e.steps.length) stopPlay(); else next(); }, cfg.playInterval || 4500); $('#play').textContent = '⏸ Παύση'; next(); } };
+      $('#all').onclick = function () { stopPlay(); if (state.showAll) { state.showAll = false; state.step = 0; } else { state.showAll = true; state.step = e.steps.length; } renderMain(false); };
+    }
+    // figure
+    var stepObj = state.step > 0 ? e.steps[state.step - 1] : null;
+    var figHtml = e.figure(pr, r, state.step - 1);
+    var fig = $('#fig'); fig.innerHTML = figHtml;
+    var hl = stepObj && stepObj.hl;
+    fig.classList.toggle('focus', !!(hl && hl.length));
+    if (hl && hl.length) fig.querySelectorAll('[data-k]').forEach(function (n) { var on = hl.indexOf(n.getAttribute('data-k')) >= 0; n.classList.toggle('hl', on); if (on) n.classList.add('a-pop'); });
+    $('#figcap').innerHTML = stepObj && stepObj.cap ? stepObj.cap : (e.figcap || '');
+    // quick values
+    $('#quickbody').innerHTML = e.quick ? e.quick(pr, r) : ''; $('#quick').hidden = !e.quick;
+    $('#all').textContent = state.showAll ? 'Απόκρυψη' : 'Όλα';
+    // steps
+    var sh = '';
+    for (var i = 0; i < Math.min(state.step, e.steps.length); i++) {
+      var st = e.steps[i];
+      sh += '<div class="step ' + (i === state.step - 1 ? 'cur' : 'done') + '"><div class="st"><span class="no">ΒΗΜΑ ' + (i + 1) + '</span><h4>' + st.title + '</h4></div><div class="body">' + st.body(pr, r) + '</div></div>';
+    }
+    $('#steps').innerHTML = sh;
+    $('#resbox').innerHTML = state.step >= e.steps.length && e.result ? '<div class="result"><h3>Αποτέλεσμα</h3>' + e.result(pr, r) + '</div>' : '';
+    $('#prog').textContent = 'Βήμα ' + state.step + ' / ' + e.steps.length;
+    $('#pbar').style.width = (100 * state.step / e.steps.length) + '%';
+    $('#prev').disabled = state.step === 0; $('#next').disabled = state.step >= e.steps.length;
+    var cur = $('.step.cur'); if (cur && scroll && !state.showAll) cur.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }
+  function renderSliders(e) {
+    var pr = params(e), df = defaults(e), s = '';
+    (e.givens || []).forEach(function (g) {
+      var changed = Math.abs(pr[g.key] - df[g.key]) > 1e-9;
+      s += '<div class="sl' + (changed ? ' changed' : '') + '"><label for="sl_' + g.key + '">' + g.label + '</label><span class="v">' + fmt(pr[g.key], g.dec === undefined ? (g.step < 1 ? 2 : 0) : g.dec) + '<small>' + (g.unit || '') + '</small></span><input type="range" id="sl_' + g.key + '" data-key="' + g.key + '" min="' + g.min + '" max="' + g.max + '" step="' + g.step + '" value="' + pr[g.key] + '"></div>';
+    });
+    $('#sliders').innerHTML = s || '<span style="color:var(--muted);font-size:13px">Η άσκηση δεν έχει μεταβλητά δεδομένα.</span>';
+    $('#sliders').querySelectorAll('input').forEach(function (inp) {
+      inp.addEventListener('input', function () {
+        state.params[e.id] = state.params[e.id] || {}; state.params[e.id][inp.dataset.key] = parseFloat(inp.value);
+        var g = e.givens.filter(function (x) { return x.key === inp.dataset.key; })[0];
+        inp.parentNode.querySelector('.v').innerHTML = fmt(parseFloat(inp.value), g.dec === undefined ? (g.step < 1 ? 2 : 0) : g.dec) + '<small>' + (g.unit || '') + '</small>';
+        inp.parentNode.classList.toggle('changed', Math.abs(parseFloat(inp.value) - g.value) > 1e-9);
+        renderMain(false);
+      });
+    });
+  }
+  function next() { var e = ex(); if (!e || state.step >= e.steps.length) { stopPlay(); return; } state.step++; renderMain(false, true); }
+  function prev() { var e = ex(); if (!e || state.step <= 0) return; state.step--; renderMain(false, true); }
+  function stopPlay() { if (state.playing) { clearInterval(state.playing); state.playing = null; var b = $('#play'); if (b) b.textContent = '▶ Αυτόματα'; } }
+  function renderSheet() {
+    var main = $('#main');
+    var h = topbar() + '<div class="ex-head"><span class="kicker">' + cfg.kicker + '</span><h2>Τυπολόγιο, πίνακες και διαγράμματα</h2></div><div class="sheet">';
+    cfg.sheet.forEach(function (c) { h += '<div class="card' + (c.wide ? ' wide' : '') + '"><h3>' + c.title + '</h3>' + c.html + '</div>'; });
+    main.innerHTML = h + '</div>';
+    wireTop();
+  }
+  return { init: init, go: go, state: state };
+})();
+
+</script>
+<script>
+/* Φέρουσα Ικανότητα – ασκήσεις 1..8 (από: Υποδειγματικές Ασκήσεις Φέρουσας Ικανότητας, Π. Πελέκης, Νοέμβριος 2024) */
+'use strict';
+var EX = [];
+
+/* ===================== ΑΣΚΗΣΗ 1 ===================== */
+EX.push({
+  id: 'b1', num: 1, group: 'Τοίχοι αντιστήριξης', source: 'Άσκηση 1',
+  title: 'Μήκος πέλματος L ώστε να μην υπάρχει εκκεντρότητα στη βάση τοίχου',
+  tags: ['Τοίχος ΩΣ', 'Ενεργητικές ωθήσεις', 'Εκκεντρότητα'],
+  statement: p('Για τον τοίχο αντιστήριξης ΩΣ του σχήματος να υπολογίσετε τη διάσταση ' + m('L') + ' ώστε να μην εμφανίζεται εκκεντρότητα στη βάση του τοίχου. Ο τοίχος να θεωρηθεί λείος.') +
+    '<ul><li>Αμμοχάλικο: ' + m('φ = 34.5°,\\; γ = 17\\unit{kN/m³}') + '</li><li>Σκυρόδεμα: ' + m('γ_c = 24\\unit{kN/m³}') + '</li><li>Κορμός 0.5 m, πέλμα πάχους 0.5 m, προεξοχή εμπρός 1.0 m, ύψος ' + m('H = 5.5\\unit{m}') + '</li></ul>' +
+    p('<b>Διαδικασία:</b> κατακόρυφες δυνάμεις → ροπές ως προς το σημείο Α (άκρο πέλματος) → απαίτηση ' + m('\\frac{\\sum M_A}{\\sum V} = \\frac{B}{2}') + ' (ισοδύναμα ' + m('\\sum M_O = 0') + ' ως προς το μέσο της βάσης).'),
+  givens: [
+    { key: 'H', label: 'Ύψος τοίχου H', unit: 'm', value: 5.5, min: 3, max: 8, step: 0.1 },
+    { key: 'phi', label: 'Γωνία τριβής φ', unit: '°', value: 34.5, min: 25, max: 42, step: 0.5, dec: 1 },
+    { key: 'g', label: 'Ειδικό βάρος εδάφους γ', unit: 'kN/m³', value: 17, min: 15, max: 21, step: 0.5, dec: 1 },
+    { key: 'gc', label: 'Ειδικό βάρος σκυροδέματος γc', unit: 'kN/m³', value: 24, min: 22, max: 25, step: 0.5, dec: 1 },
+    { key: 'a', label: 'Προεξοχή εμπρός (πόδι)', unit: 'm', value: 1.0, min: 0.3, max: 2, step: 0.1 }
+  ],
+  compute: function (q) {
+    var t = 0.5, tb = 0.5, H = q.H, hs = H - tb;
+    var W1 = hs * q.gc * t, arm1 = q.a + t / 2;
+    var Ka = GEO.Ka(q.phi), sa = Ka * q.g * H, Pa = 0.5 * sa * H, armPa = H / 3;
+    function parts(L) {
+      var B = q.a + t + L, W2 = B * q.gc * tb, W3 = hs * q.g * L;
+      var SV = W1 + W2 + W3, SM = W1 * arm1 + W2 * B / 2 + W3 * (q.a + t + L / 2) - Pa * armPa;
+      return { B: B, W2: W2, W3: W3, SV: SV, SM: SM, e: B / 2 - SM / SV };
+    }
+    var L = solve(function (L) { var k = parts(L); return k.SM - k.SV * k.B / 2; }, 0.2, 12);
+    var k = parts(L);
+    return { t: t, tb: tb, hs: hs, W1: W1, arm1: arm1, Ka: Ka, sa: sa, Pa: Pa, armPa: armPa, L: L, B: k.B, W2: k.W2, W3: k.W3, SV: k.SV, SM: k.SM, parts: parts,
+      c2: q.gc * tb, c3: hs * q.g }; // W2 = c2·B, W3 = c3·L
+  },
+  figure: function (q, r, step) {
+    var s = 46, x0 = 150, gy = 380, H = q.H, L = isNaN(r.L) ? 2 : Math.min(r.L, 5);
+    var a = q.a, t = r.t, tb = r.tb, B = a + t + L;
+    var yTop = gy - H * s, yBase = gy - tb * s;
+    var xs = x0 + a * s, xh = xs + t * s, xe = xh + L * s;
+    var W = 760, Hc = 440;
+    var h = SVG.open(W, Hc, 'aria-label="Τοίχος αντιστήριξης με επίχωση, κατακόρυφες δυνάμεις W1 W2 W3 και ενεργητική ώθηση Pa"');
+    h += SVG.soil(xh, yTop, 720 - xh, gy - yTop, 'sand');          // backfill
+    h += SVG.rect(30, gy, 700, Hc - gy - 10, 'soil2');              // foundation soil
+    h += SVG.ground(30, xs, gy, 'left') + SVG.ground(xh, 730, yTop, 'right');
+    // wall
+    h += SVG.poly([[x0, yBase], [x0 + B * s, yBase], [x0 + B * s, gy], [x0, gy]], 'conc', 'data-k="B"');
+    h += SVG.rect(xs, yTop, t * s, H * s - tb * s, 'conc');
+    // weights
+    var cx1 = xs + t * s / 2, cy1 = (yTop + yBase) / 2;
+    h += '<g data-k="W1">' + SVG.arrow(cx1, cy1 - 40, cx1, cy1 + 40, 'weight') + SVG.label(cx1 + 14, cy1 + 5, tsub('W', '1'), 'math', 'start') + '</g>';
+    var cx2 = x0 + B * s / 2, cy2 = yBase + tb * s / 2;
+    h += '<g data-k="W2">' + SVG.arrow(cx2, cy2 - 6, cx2, cy2 + 50, 'weight') + SVG.label(cx2 + 12, cy2 + 40, tsub('W', '2'), 'math', 'start') + '</g>';
+    var cx3 = xh + L * s / 2, cy3 = (yTop + yBase) / 2;
+    h += '<g data-k="W3">' + SVG.arrow(cx3, cy3 - 40, cx3, cy3 + 40, 'weight') + SVG.label(cx3 + 14, cy3 + 5, tsub('W', '3'), 'math', 'start') + '</g>';
+    // active pressure on vertical plane through heel end
+    var wB = Math.min(110, r.sa * 3);
+    h += '<g data-k="Pa">' + SVG.pressure(xe, yTop, gy, 0, wB, 1, 'load-fill', '', 6) +
+      SVG.arrow(xe + wB + 30, gy - r.armPa * s, xe + 4, gy - r.armPa * s, 'load') + SVG.label(xe + wB + 36, gy - r.armPa * s - 8, tsub('P', 'a'), 'lbl-load math', 'start') +
+      SVG.label(xe + wB + 6, gy - 4, 'σ' + '<tspan dy="4" font-size="10">a</tspan>', 'lbl-load math', 'start') + '</g>';
+    // points
+    h += '<g data-k="A">' + SVG.point(x0, gy, 'A', -16, 18) + '</g>';
+    h += SVG.point(x0 + B * s / 2, gy, 'O', 6, 18);
+    // dims
+    h += '<g data-k="L">' + SVG.dim(xh, yBase - 8, xe, yBase - 8, 'L = ' + fmt(r.L, 2) + ' m', -18) + '</g>';
+    h += SVG.dim(x0, yBase - 8, xs, yBase - 8, fmt(a, 1) + ' m', -18);
+    h += SVG.dim(x0 - 50, yTop, x0 - 50, gy, 'H = ' + fmt(H, 1) + ' m', -8);
+    h += '<g data-k="B">' + SVG.dim(x0, gy + 12, x0 + B * s, gy + 12, 'B = ' + fmt(r.B, 2) + ' m', 18) + '</g>';
+    h += SVG.dim(x0 + B * s + 10, yBase, x0 + B * s + 10, gy, fmt(tb, 1), 8);
+    h += SVG.label(xh + 90, yTop + 26, 'Αμμοχάλικο φ=' + fmt(q.phi, 1) + '°, γ=' + fmt(q.g, 0) + ' kN/m³', 'lbl-muted', 'start');
+    h += SVG.label(xs + t * s / 2, yTop - 8, '0.5', 'lbl-muted');
+    // resultant at step 5
+    if (step >= 4) { h += '<g class="a-fade">' + SVG.arrow(x0 + B * s / 2, gy - 110, x0 + B * s / 2, gy - 8, 'fg', '', 4) + SVG.label(x0 + B * s / 2 + 10, gy - 90, 'ΣV στο μέσο → e = 0', 'math', 'start') + '</g>'; }
+    return h + SVG.close();
+  },
+  figcap: 'Λείος τοίχος: η ενεργητική ώθηση λαμβάνεται στο κατακόρυφο επίπεδο που περνά από το άκρο του πέλματος, το έδαφος πάνω από το πέλμα (W₃) λογίζεται ως βάρος.',
+  quick: function (q, r) {
+    return '<dl class="given"><dt>' + m('K_a') + '</dt><dd>' + fmt(r.Ka, 3) + '</dd><dt>' + m('σ_a') + ' (βάση)</dt><dd>' + fmt(r.sa, 1) + ' kPa</dd><dt>' + m('P_a') + '</dt><dd>' + fmt(r.Pa, 1) + ' kN/m</dd><dt>' + m('\\sum V') + '</dt><dd>' + fmt(r.SV, 1) + ' kN/m</dd><dt>' + m('L') + '</dt><dd><b>' + fmt(r.L, 2) + ' m</b></dd></dl>';
+  },
+  steps: [
+    {
+      title: 'Κατακόρυφες δυνάμεις (ανά τρέχον μέτρο)', hl: ['W1', 'W2', 'W3'],
+      cap: 'Τρία βάρη: κορμός W₁, πέλμα W₂, επίχωση πάνω από το πέλμα W₃. Τα W₂, W₃ εξαρτώνται από το άγνωστο L.',
+      body: function (q, r) {
+        return eqs([
+          ['W_1 = (H - 0.5)\\,γ_c\\,0.5 = (' + fmt(q.H, 1) + '-0.5)\\times' + fmt(q.gc, 0) + '\\times 0.5 = \\hl{' + fmt(r.W1, 1) + '\\unit{kN}}', 'κορμός'],
+          ['W_2 = (' + fmt(q.a + 0.5, 1) + '+L)\\,γ_c\\,0.5 = ' + fmt(r.c2, 0) + 'L + ' + fmt(r.c2 * (q.a + 0.5), 1), 'πέλμα'],
+          ['W_3 = (H-0.5)\\,γ\\,L = ' + fmt(r.c3, 1) + '\\,L', 'επίχωση πάνω από το πέλμα']
+        ]);
+      }
+    },
+    {
+      title: 'Συντελεστής ενεργητικών ωθήσεων', hl: ['Pa'],
+      body: function (q, r) { return eq('K_a = \\tan^2\\left(45° - \\frac{φ}{2}\\right) = \\tan^2(' + fmt(45 - q.phi / 2, 2) + '°) = \\hl{' + fmt(r.Ka, 3) + '}', 'Rankine, λείος τοίχος, οριζόντια επιφάνεια'); }
+    },
+    {
+      title: 'Ενεργητική τάση και ώθηση', hl: ['Pa'],
+      cap: 'Τριγωνική κατανομή: μηδέν στην επιφάνεια, μέγιστη στη βάση. Η συνισταμένη Pa στο H/3 από τη βάση.',
+      body: function (q, r) {
+        return eqs([
+          ['σ_a = K_a\\,γ\\,H = ' + fmt(r.Ka, 3) + '\\times' + fmt(q.g, 0) + '\\times' + fmt(q.H, 1) + ' = \\hl{' + fmt(r.sa, 1) + '\\unit{kPa}}'],
+          ['P_a = \\frac{1}{2}\\,σ_a\\,H = \\frac{1}{2}\\times' + fmt(r.sa, 1) + '\\times' + fmt(q.H, 1) + ' = \\hl{' + fmt(r.Pa, 1) + '\\unit{kN/m}}', 'στο ύψος H/3 = ' + fmt(r.armPa, 2) + ' m']
+        ]);
+      }
+    },
+    {
+      title: 'Ροπές ως προς το σημείο Α', hl: ['A', 'W1', 'W2', 'W3', 'Pa'],
+      cap: 'Οι μοχλοβραχίονες μετρώνται από το μπροστινό άκρο Α. Τα βάρη δίνουν ροπές ευστάθειας (+), η Pa ροπή ανατροπής (−).',
+      body: function (q, r) {
+        var a = q.a, c2 = r.c2, c3 = r.c3, a05 = a + 0.5;
+        return table(['Δύναμη', 'Τιμή (kN)', 'Μοχλοβραχίονας (m)', 'Ροπή ως προς Α (kNm)'], [
+          [m('W_1'), fmt(r.W1, 1), fmt(r.arm1, 2), '+' + fmt(r.W1 * r.arm1, 1)],
+          [m('W_2'), m(fmt(c2, 0) + 'L+' + fmt(c2 * a05, 1)), m('\\frac{' + fmt(a05, 1) + '+L}{2}'), m('+(' + fmt(c2 / 2, 0) + 'L^2 + ' + fmt(c2 * a05, 1) + 'L + ' + fmt(c2 * a05 * a05 / 2, 2) + ')')],
+          [m('W_3'), m(fmt(c3, 1) + 'L'), m(fmt(a05, 1) + '+\\frac{L}{2}'), m('+(' + fmt(c3 / 2, 2) + 'L^2 + ' + fmt(c3 * a05, 1) + 'L)')],
+          [m('P_a'), fmt(r.Pa, 1), fmt(r.armPa, 2), '−' + fmt(r.Pa * r.armPa, 1)]
+        ]) + eqs([
+          ['\\sum V = ' + fmt(c2 + c3, 1) + 'L + ' + fmt(r.W1 + c2 * a05, 1)],
+          ['\\sum M_A = ' + fmt(c2 / 2 + c3 / 2, 2) + 'L^2 + ' + fmt(c2 * a05 + c3 * a05, 1) + 'L + ' + fmt(r.W1 * r.arm1 + c2 * a05 * a05 / 2 - r.Pa * r.armPa, 1)]
+        ]);
+      }
+    },
+    {
+      title: 'Συνθήκη μηδενικής εκκεντρότητας → L', hl: ['L', 'B'],
+      cap: 'Η συνισταμένη των κατακόρυφων δυνάμεων πρέπει να περνά από το μέσο της βάσης: e = 0.',
+      body: function (q, r) {
+        return p('Η συνισταμένη περνά από το μέσο της βάσης όταν η απόσταση της από το Α ισούται με B/2:') +
+          eqs([
+            ['\\frac{\\sum M_A}{\\sum V} = \\frac{B}{2} = \\frac{' + fmt(q.a + 0.5, 1) + ' + L}{2}'],
+            ['\\Rightarrow\\; (' + fmt(q.a + 0.5, 1) + '+L)\\,\\sum V = 2\\,\\sum M_A', 'οι όροι L² απαλείφονται, γραμμική εξίσωση'],
+            ['\\Rightarrow\\; L = \\hl{' + fmt(r.L, 2) + '\\unit{m}} \\approx ' + fmt(Math.round(r.L * 2) / 2, 1) + '\\unit{m},\\quad B = ' + fmt(r.B, 2) + '\\unit{m}']
+          ]) + note('Έλεγχος: ' + m('\\sum M_A/\\sum V = ' + fmt(r.SM / r.SV, 2) + '\\unit{m} = B/2'));
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('L \\approx ' + fmt(r.L, 2) + '\\unit{m}') + '</div><p>Με ' + m('L = ' + fmt(r.L, 2) + '\\unit{m}') + ' η συνισταμένη των φορτίων περνά από το μέσο της βάσης (πλάτος ' + m('B = ' + fmt(r.B, 2) + '\\unit{m}') + '), άρα η τάση εδάφους είναι ομοιόμορφη.</p>'; }
+});
+
+/* ---------- local helpers ---------- */
+/* section of a footing in a trench: o = {B, Df, Vlabel, wt, step, wedgeStep, labelsAbove, labelsBelow, Hlabel, extra, Bname} */
+function footingSection(o) {
+  var W = 760, Hc = 400, gy = 120, cx = 400;
+  var B = Math.max(o.B, 0.6), Df = Math.max(o.Df, 0);
+  var s = Math.min(240 / B, 90 / Math.max(Df, 0.8), 75);
+  var yf = gy + Df * s, ft = 22, xl = cx - B * s / 2, xr = cx + B * s / 2, trench = 34;
+  var h = SVG.open(W, Hc, 'aria-label="Τομή θεμελίου σε βάθος θεμελίωσης με έδαφος, φορτίο και υδροφόρο ορίζοντα"');
+  h += SVG.soil(40, gy, xl - trench - 40, Hc - gy - 10, 'sand') + SVG.soil(xr + trench, gy, 720 - xr - trench, Hc - gy - 10, 'sand');
+  h += SVG.soil(xl - trench, yf, xr - xl + 2 * trench, Hc - yf - 10, o.lowerType || 'sand');
+  h += SVG.ground(40, xl - trench, gy, 'left') + SVG.ground(xr + trench, 720, gy, 'right');
+  h += SVG.line(xl - trench, gy, xl - trench, yf, 'ground') + SVG.line(xr + trench, gy, xr + trench, yf, 'ground') + SVG.line(xl - trench, yf, xr + trench, yf, 'ground');
+  // failure mechanism
+  if (o.wedgeStep !== undefined && o.step >= o.wedgeStep) {
+    var ang = (45 + (o.phi || 0) / 2) * DEG, hw = (B * s / 2) * Math.tan(ang);
+    var d = 'M' + xl + ',' + yf + ' L' + cx + ',' + (yf + hw) + ' L' + xr + ',' + yf;
+    var rx = xr + B * s * 0.9, ry = yf;
+    var dsp = 'M' + cx + ',' + (yf + hw) + ' Q' + (xr + B * s * 0.5) + ',' + (yf + hw * 1.25) + ' ' + rx + ',' + ry;
+    var dsp2 = 'M' + cx + ',' + (yf + hw) + ' Q' + (xl - B * s * 0.5) + ',' + (yf + hw * 1.25) + ' ' + (xl - B * s * 0.9) + ',' + ry;
+    h += '<g data-k="wedge"><path d="' + d + '" class="guide a-draw"/><path d="' + dsp + '" class="guide a-draw"/><path d="' + dsp2 + '" class="guide a-draw"/>' +
+      SVG.label(cx, yf + hw + 14, 'επιφάνεια αστοχίας', 'lbl-load') + '</g>';
+  }
+  // footing
+  h += '<g data-k="B">' + SVG.rect(xl, yf - ft, xr - xl, ft, 'conc') + '</g>';
+  h += '<g data-k="V">' + SVG.arrow(cx, yf - ft - 90, cx, yf - ft - 4, 'load', '', 4) + SVG.label(cx + 10, yf - ft - 60, o.Vlabel || 'V', 'lbl-load math', 'start') + '</g>';
+  if (o.wt) h += '<g data-k="WT">' + SVG.wt(xr + trench + 40, yf) + SVG.line(40, yf, 720, yf, 'thin dash', 'stroke="var(--water)"') + SVG.label(xr + trench + 58, yf - 4, 'Υ.Ο.', 'lbl-muted', 'start') + '</g>';
+  h += '<g data-k="B">' + SVG.dim(xl, yf + 10, xr, yf + 10, (o.Bname || 'B') + ' = ' + fmt(o.B, 2) + ' m', 16) + '</g>';
+  if (Df > 0) h += '<g data-k="Df">' + SVG.dim(xl - trench - 30, gy, xl - trench - 30, yf, (o.Dfname || 'D<tspan dy="4" font-size="10">f</tspan><tspan dy="-4"> </tspan>') + '= ' + fmt(o.Df, 2) + ' m', -8) + '</g>';
+  (o.labelsAbove || []).forEach(function (t, i) { h += SVG.label(60, gy + 22 + i * 16, t, 'lbl-muted', 'start'); });
+  (o.labelsBelow || []).forEach(function (t, i) { h += SVG.label(60, yf + 40 + i * 16, t, 'lbl-muted', 'start'); });
+  h += (o.extra || '');
+  return h + SVG.close();
+}
+/* plan with effective area */
+function effectivePlan(B, L, eB, eL, step, showEff) {
+  var W = 360, Hc = 300, s = Math.min(220 / L, 180 / B), cx = 180, cy = 150;
+  var x0 = cx - L * s / 2, y0 = cy - B * s / 2;
+  var h = SVG.open(W, Hc, 'aria-label="Κάτοψη θεμελίου με ενεργό επιφάνεια"');
+  h += SVG.rect(x0, y0, L * s, B * s, 'conc');
+  var Lp = L - 2 * Math.abs(eL), Bp = B - 2 * Math.abs(eB);
+  if (showEff) {
+    var ex = eL >= 0 ? x0 + 2 * eL * s : x0, ey = eB >= 0 ? y0 + 2 * eB * s : y0;
+    h += '<g data-k="Ap" class="a-fade">' + SVG.rect(ex, ey, Lp * s, Bp * s, 'fill-hl') + SVG.rect(ex, ey, Lp * s, Bp * s, 'hatch') +
+      SVG.label(ex + Lp * s / 2, ey + Bp * s - 10, 'A′ = B′·L′', 'math') + '</g>';
+    h += '<g data-k="Ap">' + SVG.dim(ex, y0 - 10, ex + Lp * s, y0 - 10, 'L′ = ' + fmt(Lp, 2), -14) + SVG.dim(x0 + L * s + 10, ey, x0 + L * s + 10, ey + Bp * s, 'B′ = ' + fmt(Bp, 2), 8) + '</g>';
+  }
+  h += SVG.circle(cx, cy, 4, 'pt') + SVG.label(cx - 8, cy - 10, 'κ.β.', 'lbl-muted', 'end');
+  h += '<g data-k="e">' + SVG.circle(cx + eL * s, cy + eB * s, 5, 'marker a-pop') + SVG.label(cx + eL * s + 8, cy + eB * s - 10, 'V (e = ' + fmt(Math.abs(eL) + Math.abs(eB), 2) + ' m)', 'lbl-load', 'start') + '</g>';
+  h += SVG.dim(x0, y0 + B * s + 12, x0 + L * s, y0 + B * s + 12, 'L = ' + fmt(L, 1), 16) + SVG.dim(x0 - 12, y0, x0 - 12, y0 + B * s, 'B = ' + fmt(B, 1), -8);
+  return h + SVG.close();
+}
+function side2(a, b) { return '<div style="display:grid;gap:10px">' + a + '<div style="max-width:420px;margin:0 auto;width:100%">' + b + '</div></div>'; }
+function dinTableHot(phi) { return TABLES.din1(phi); }
+
+/* ===================== ΑΣΚΗΣΗ 2 ===================== */
+EX.push({
+  id: 'b2', num: 2, group: 'DIN 4017 – λοξή & έκκεντρη φόρτιση', source: 'Άσκηση 2',
+  title: 'Συντελεστής ασφαλείας ορθογωνικού θεμελίου με λοξή και έκκεντρη φόρτιση (DIN 4017)',
+  tags: ['DIN 4017', 'Εκκεντρότητα', 'Λοξή φόρτιση', 'Άμμος'],
+  statement: p('Ορθογωνικό θεμέλιο ' + m('3\\times 2\\unit{m}') + ' εδράζεται σε βάθος ' + m('d = 2\\unit{m}') + ' και μεταβιβάζει στο έδαφος κατακόρυφο φορτίο ' + m('V = 150\\unit{t}') + ', οριζόντιο ' + m('H = 32.5\\unit{t}') + ' και ροπή ' + m('M = 75\\unit{tm}') + ' (κατά τη μεγάλη διάσταση). Το κατακόρυφο φορτίο διέρχεται από το κέντρο βάρους του θεμελίου.') +
+    p('Να υπολογίσετε τον συντελεστή ασφαλείας έναντι φέρουσας ικανότητας σύμφωνα με τον DIN 4017 για λοξή και έκκεντρη φόρτιση.') +
+    '<ul><li>Γωνία εσωτερικής τριβής ' + m('φ = 30°') + ', συνοχή ' + m('c = 0') + '</li><li>Ειδικό βάρος εδάφους ' + m('γ = 18\\unit{kN/m³}') + '</li></ul>',
+  givens: [
+    { key: 'V', label: 'Κατακόρυφο φορτίο V', unit: 'kN', value: 1500, min: 500, max: 3000, step: 50 },
+    { key: 'H', label: 'Οριζόντιο φορτίο H', unit: 'kN', value: 325, min: 0, max: 800, step: 5 },
+    { key: 'M', label: 'Ροπή M', unit: 'kNm', value: 750, min: 0, max: 1500, step: 10 },
+    { key: 'phi', label: 'Γωνία τριβής φ', unit: '°', value: 30, min: 20, max: 40, step: 2.5, dec: 1 },
+    { key: 'g', label: 'Ειδικό βάρος γ', unit: 'kN/m³', value: 18, min: 16, max: 21, step: 0.5, dec: 1 },
+    { key: 'd', label: 'Βάθος θεμελίωσης d', unit: 'm', value: 2, min: 0.5, max: 4, step: 0.25 }
+  ],
+  compute: function (q) {
+    var B = 2, L = 3, eL = q.M / q.V, Lp = Math.max(L - 2 * eL, 0.1), Bp = B, Ap = Lp * Bp;
+    var Bmin = Math.min(Bp, Lp), Lmax = Math.max(Bp, Lp), BL = Bmin / Lmax;
+    var N = GEO.din(q.phi), HV = q.H / q.V;
+    var Kd = Math.pow(Math.max(1 - 0.7 * HV, 0), 3), Kb = Math.pow(Math.max(1 - HV, 0), 3), Kc = Kd - (1 - Kd) / (N.Nd - 1);
+    var Vd = 1 + BL * sind(q.phi), Vb = 1 - 0.3 * BL, Vc = (Vd * N.Nd - 1) / (N.Nd - 1);
+    var q1 = q.g * q.d * N.Nd * Kd * Vd, q2 = q.g * Bmin * N.Nb * Kb * Vb, qult = q1 + q2;
+    var p0 = q.g * q.d, qapp = q.V / Ap, FS = (qult - p0) / (qapp - p0);
+    return { B: B, L: L, eL: eL, Lp: Lp, Bp: Bp, Ap: Ap, Bmin: Bmin, BL: BL, Nc: N.Nc, Nd: N.Nd, Nb: N.Nb, HV: HV, Kd: Kd, Kb: Kb, Kc: Kc, Vd: Vd, Vb: Vb, Vc: Vc, q1: q1, q2: q2, qult: qult, p0: p0, qapp: qapp, FS: FS };
+  },
+  figure: function (q, r, step) {
+    var extra = '';
+    var sec = footingSection({ B: r.L, Df: q.d, Bname: 'L', Vlabel: 'V', step: step, wedgeStep: 5, phi: q.phi, labelsAbove: ['φ = ' + fmt(q.phi, 1) + '°, c = 0', 'γ = ' + fmt(q.g, 0) + ' kN/m³'], extra: extra });
+    // add H and M arrows onto the section: re-use coordinates (cx=400, yf computed the same way)
+    var B = Math.max(r.L, 0.6), s = Math.min(240 / B, 90 / Math.max(q.d, 0.8), 75), yf = 120 + q.d * s, cx = 400;
+    var hm = '<g data-k="H">' + SVG.arrow(cx - 70, yf - 34, cx + 60, yf - 34, 'load', '', 3) + SVG.label(cx + 66, yf - 30, 'H', 'lbl-load math', 'start') + '</g>' +
+      '<g data-k="M"><path d="M' + (cx - 50) + ',' + (yf - 100) + ' A50,25 0 0 1 ' + (cx + 50) + ',' + (yf - 100) + '" fill="none" stroke="var(--load)" stroke-width="3" marker-end="url(#arL)"/>' + SVG.label(cx + 56, yf - 106, 'M', 'lbl-load math', 'start') + '</g>';
+    sec = sec.replace('</svg>', hm + '</svg>').replace(SVG.label(cx + 10, yf - 22 - 60, 'V', 'lbl-load math', 'start'), SVG.label(cx - 12, yf - 22 - 60, 'V', 'lbl-load math', 'end'));
+    return side2(sec, effectivePlan(r.B, r.L, 0, r.eL, step, step >= 0));
+  },
+  figcap: 'Τομή κατά τη μεγάλη διάσταση L και κάτοψη: η ροπή μετατοπίζει τη συνισταμένη κατά e, το θεμέλιο «λειτουργεί» με την ενεργό επιφάνεια A′ = B′·L′.',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('e_L') + '</dt><dd>' + fmt(r.eL, 2) + ' m</dd><dt>' + m('A\'') + '</dt><dd>' + fmt(r.Ap, 2) + ' m²</dd><dt>' + m('K_d,\\;K_b') + '</dt><dd>' + fmt(r.Kd, 2) + ', ' + fmt(r.Kb, 2) + '</dd><dt>' + m('q_{ult}') + '</dt><dd>' + fmt(r.qult, 0) + ' kPa</dd><dt>FS</dt><dd><b>' + fmt(r.FS, 2) + '</b></dd></dl>'; },
+  steps: [
+    {
+      title: 'Εκκεντρότητα και ενεργό επιφάνεια', hl: ['M', 'e', 'Ap'],
+      cap: 'Η ροπή ισοδυναμεί με μετατόπιση του V κατά e = M/V. Το θεμέλιο «μικραίνει» κατά 2e στη διεύθυνση της ροπής (Meyerhof).',
+      body: function (q, r) {
+        return eqs([
+          ['e_L = \\frac{\\sum M}{\\sum V} = \\frac{M}{V} = \\frac{' + fmt(q.M, 0) + '}{' + fmt(q.V, 0) + '} = \\hl{' + fmt(r.eL, 2) + '\\unit{m}}', 'e ≤ L/6 = 0.5 m: ' + (r.eL <= 0.5 ? 'ΟΚ, χωρίς αδρανή περιοχή' : 'υπέρβαση, εμφανίζεται αδρανής περιοχή')],
+          ['L\' = L - 2e_L = 3 - ' + fmt(2 * r.eL, 2) + ' = \\hl{' + fmt(r.Lp, 2) + '\\unit{m}},\\quad B\' = B = 2\\unit{m}'],
+          ['A\' = B\'\\,L\' = \\hl{' + fmt(r.Ap, 2) + '\\unit{m²}}']
+        ]);
+      }
+    },
+    {
+      title: 'Συντελεστές φέρουσας ικανότητας κατά DIN 4017', hl: ['wedge'],
+      body: function (q, r) { return p('Από τον Πίνακα 1 (DIN 4017) για ' + m('φ = ' + fmt(q.phi, 1) + '°') + ':') + eq('N_c = ' + fmt(r.Nc, 1) + ',\\quad N_d = \\hl{' + fmt(r.Nd, 1) + '},\\quad N_b = \\hl{' + fmt(r.Nb, 1) + '}') + dinTableHot(q.phi); }
+    },
+    {
+      title: 'Συντελεστές λοξής φόρτισης', hl: ['H', 'V'],
+      cap: 'Η οριζόντια συνιστώσα μειώνει τη φέρουσα ικανότητα: οι συντελεστές K εξαρτώνται από τον λόγο H/V.',
+      body: function (q, r) {
+        return p('Με ' + m('c = 0') + ' ο όρος ' + m('B\'L\'c\\cot φ') + ' μηδενίζεται και ' + m('H_b/V_b = H/V = ' + fmt(r.HV, 3)) + ' (οι συντελεστές ασφαλείας απλοποιούνται):') +
+          eqs([
+            ['K_d = \\left(1 - 0.7\\,\\frac{H}{V}\\right)^3 = (1 - 0.7\\times' + fmt(r.HV, 3) + ')^3 = \\hl{' + fmt(r.Kd, 2) + '}'],
+            ['K_b = \\left(1 - \\frac{H}{V}\\right)^3 = (1 - ' + fmt(r.HV, 3) + ')^3 = \\hl{' + fmt(r.Kb, 2) + '}'],
+            ['K_c = K_d - \\frac{1-K_d}{N_d - 1} = ' + fmt(r.Kc, 3), 'δεν χρειάζεται, αφού c = 0']
+          ]) + note('Οι σημειώσεις αναγράφουν K<sub>c</sub> = 0.013 (τυπογραφικό). Η τιμή είναι αδιάφορη για αμμώδες έδαφος χωρίς συνοχή.');
+      }
+    },
+    {
+      title: 'Συντελεστές μορφής', hl: ['Ap'],
+      body: function (q, r) {
+        return p('Η ενεργός επιφάνεια είναι ' + m('B\' \\times L\' = ' + fmt(r.Bp, 2) + '\\times' + fmt(r.Lp, 2)) + (Math.abs(r.BL - 1) < 0.01 ? ' → τετράγωνο:' : ' → ορθογώνιο με ' + m('B\'/L\' = ' + fmt(r.BL, 2)) + ':')) +
+          eqs([
+            ['V\'_d = 1 + \\frac{B\'}{L\'}\\sin φ = 1 + ' + fmt(r.BL, 2) + '\\times\\sin ' + fmt(q.phi, 1) + '° = \\hl{' + fmt(r.Vd, 2) + '}'],
+            ['V\'_b = 1 - 0.3\\,\\frac{B\'}{L\'} = \\hl{' + fmt(r.Vb, 2) + '}'],
+            ['V\'_c:\\;\\text{αδιάφορος (c = 0)}']
+          ]);
+      }
+    },
+    {
+      title: 'Οριακή φέρουσα ικανότητα', hl: ['wedge', 'B', 'Df'],
+      cap: 'Δύο όροι συνεισφέρουν: το βάθος θεμελίωσης (υπερκείμενο γ·d) και το πλάτος B′ (βάρος εδάφους στη ζώνη αστοχίας).',
+      body: function (q, r) {
+        return eqs([
+          ['q_{ult} = c N_c K_c V\'_c + γ_1\\,d\\,N_d K_d V\'_d + γ_2\\,B\'\\,N_b K_b V\'_b'],
+          ['= ' + fmt(q.g, 0) + '\\cdot' + fmt(q.d, 2) + '\\cdot' + fmt(r.Nd, 1) + '\\cdot' + fmt(r.Kd, 2) + '\\cdot' + fmt(r.Vd, 2) + ' + ' + fmt(q.g, 0) + '\\cdot' + fmt(r.Bmin, 2) + '\\cdot' + fmt(r.Nb, 1) + '\\cdot' + fmt(r.Kb, 2) + '\\cdot' + fmt(r.Vb, 2)],
+          ['= ' + fmt(r.q1, 1) + ' + ' + fmt(r.q2, 1) + ' = \\hl{' + fmt(r.qult, 0) + '\\unit{kPa}}']
+        ]);
+      }
+    },
+    {
+      title: 'Συντελεστής ασφαλείας (καθαρές τάσεις)', hl: ['V', 'Ap'],
+      body: function (q, r) {
+        return p('Ο συντελεστής ασφαλείας ορίζεται με τις <b>καθαρές</b> τάσεις, αφαιρώντας την υπερκείμενη γεωστατική τάση ' + m('p_0 = γ d = ' + fmt(r.p0, 0) + '\\unit{kPa}') + ' και από τις δύο:') +
+          eqs([
+            ['FS = \\frac{q_{ult,net}}{q_{app,net}} = \\frac{q_{ult} - γ d}{\\frac{V}{B\'L\'} - γ d} = \\frac{' + fmt(r.qult, 0) + ' - ' + fmt(r.p0, 0) + '}{' + fmt(r.qapp, 1) + ' - ' + fmt(r.p0, 0) + '} = \\hl{' + fmt(r.FS, 2) + '}']
+          ]);
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('FS \\approx ' + fmt(r.FS, 1)) + '</div><p>' + (r.FS >= 2 ? 'Ικανοποιητική ασφάλεια έναντι φέρουσας ικανότητας (συνήθης απαίτηση FS ≥ 2–3 για λοξή φόρτιση).' : 'Ανεπαρκής ασφάλεια: απαιτείται μεγαλύτερο θεμέλιο ή μικρότερη εκκεντρότητα.') + '</p>'; }
+});
+
+/* ===================== ΑΣΚΗΣΗ 3 ===================== */
+EX.push({
+  id: 'b3', num: 3, group: 'Τοίχοι αντιστήριξης', source: 'Άσκηση 3',
+  title: 'Τοίχος με σεισμική δύναμη: μήκος L, ασφάλεια ολίσθησης και διατμητικό κλειδί',
+  tags: ['Τοίχος ΩΣ', 'Ολίσθηση', 'Παθητικές ωθήσεις', 'Σεισμός'],
+  statement: p('Για τον τοίχο του σχήματος (ύψος 4 m, κορμός 0.5 m, πέλμα 0.5 m, προεξοχή εμπρός 0.7 m, αμμοχάλικο ' + m('φ = 36.5°,\\; γ = 18\\unit{kN/m³}') + ', σκυρόδεμα ' + m('γ_c = 24\\unit{kN/m³}') + ') να υπολογίσετε:') +
+    '<ol><li>Το μήκος ' + m('L') + ' ώστε η εκκεντρότητα στη βάση να είναι μηδενική, αγνοώντας το κλειδί και το σεισμικό φορτίο ' + m('E_x') + '.</li>' +
+    '<li>Τον συντελεστή ασφαλείας έναντι ολίσθησης επί του ενεργού πλάτους ' + m('B\'') + ', με το σεισμικό φορτίο ' + m('E_x = 62\\unit{kN/m}') + ' (2 m πάνω από τη βάση) και τη ροπή που προκαλεί. Χωρίς κλειδί.</li>' +
+    '<li>Το ύψος ' + m('h') + ' του διατμητικού κλειδιού ώστε ' + m('FS_{ολ} = 2') + '.</li></ol>' +
+    p('Έδαφος θεμελίωσης: αστράγγιστη διατμητική αντοχή ' + m('c_u = 40\\unit{kPa}') + ' (φ<sub>u</sub> = 0).'),
+  givens: [
+    { key: 'H', label: 'Ύψος τοίχου H', unit: 'm', value: 4, min: 3, max: 6, step: 0.1 },
+    { key: 'phi', label: 'Γωνία τριβής επίχωσης φ', unit: '°', value: 36.5, min: 28, max: 42, step: 0.5, dec: 1 },
+    { key: 'g', label: 'Ειδικό βάρος εδάφους γ', unit: 'kN/m³', value: 18, min: 16, max: 21, step: 0.5, dec: 1 },
+    { key: 'Fx', label: 'Σεισμική δύναμη Ex', unit: 'kN/m', value: 62, min: 0, max: 150, step: 2 },
+    { key: 'hF', label: 'Ύψος εφαρμογής Ex', unit: 'm', value: 2, min: 0.5, max: 4, step: 0.1 },
+    { key: 'cu', label: 'Αντοχή εδάφους θεμελίωσης cu', unit: 'kPa', value: 40, min: 20, max: 100, step: 5 },
+    { key: 'FSt', label: 'Απαιτούμενος FS ολίσθησης', unit: '', value: 2, min: 1.2, max: 3, step: 0.1, dec: 1 }
+  ],
+  compute: function (q) {
+    var a = 0.7, t = 0.5, tb = 0.5, gc = 24, hs = q.H - tb;
+    var W1 = hs * gc * t, arm1 = a + t / 2;
+    var Ka = GEO.Ka(q.phi), sa = Ka * q.g * q.H, Pa = 0.5 * sa * q.H, armPa = q.H / 3, MPa = Pa * armPa;
+    function parts(L) { var B = a + t + L, W2 = B * gc * tb, W3 = hs * q.g * L; var SV = W1 + W2 + W3, SM = W1 * arm1 + W2 * B / 2 + W3 * (a + t + L / 2) - MPa; return { B: B, W2: W2, W3: W3, SV: SV, SM: SM }; }
+    var Lex = solve(function (L) { var k = parts(L); return k.SM - k.SV * k.B / 2; }, 0.2, 12);
+    var L = Math.round(Lex * 10) / 10; // επιλεγόμενο μήκος (στρογγυλοποίηση στα 0.1 m, όπως στις σημειώσεις: L ≈ 2 m)
+    var k = parts(L);
+    var MF = q.Fx * q.hF, SM2 = k.SM - MF, xbar = SM2 / k.SV, e0 = xbar - k.B / 2, Bp = Math.max(k.B - 2 * Math.abs(e0), 0.1);
+    var R = q.cu * Bp, SFx = Pa + q.Fx, FS1 = R / SFx;
+    var Kp = 1, svA = k.SV / Bp, spA = svA * Kp + 2 * q.cu * Math.sqrt(Kp);
+    var Pp = function (h) { var spB = spA + q.g * h; return (spA + spB) / 2 * h; };
+    var h = solve(function (h) { return (R + Pp(h)) / SFx - q.FSt; }, 0, 5);
+    if (FS1 >= q.FSt) h = 0;
+    return { a: a, t: t, tb: tb, gc: gc, hs: hs, W1: W1, arm1: arm1, Ka: Ka, sa: sa, Pa: Pa, armPa: armPa, MPa: MPa, Lex: Lex, L: L, B: k.B, W2: k.W2, W3: k.W3, SV: k.SV, SM: k.SM, MF: MF, SM2: SM2, xbar: xbar, e0: e0, Bp: Bp, R: R, SFx: SFx, FS1: FS1, Kp: Kp, svA: svA, spA: spA, h: h, spB: spA + q.g * h, Pph: Pp(h), c2: gc * tb, c3: hs * q.g };
+  },
+  figure: function (q, r, step) {
+    var s = 48, x0 = 170, gy = 300, H = q.H, L = Math.min(r.L, 4), a = r.a, t = r.t, tb = r.tb, B = a + t + L;
+    var yTop = gy - H * s, yBase = gy - tb * s, xs = x0 + a * s, xh = xs + t * s, xe = xh + L * s;
+    var hk = Math.min(Math.max(r.h, 0.3), 1.5) * s, kx = xh + 1.0 * s, kw = 0.5 * s;
+    var W = 780, Hc = 420;
+    var h = SVG.open(W, Hc, 'aria-label="Τοίχος αντιστήριξης με διατμητικό κλειδί, σεισμική δύναμη, ενεργητική και παθητική ώθηση"');
+    h += SVG.soil(xh, yTop, 740 - xh, gy - yTop, 'sand') + SVG.soil(30, gy, 710, Hc - gy - 10, 'clay');
+    h += SVG.ground(30, xs, gy, 'left') + SVG.ground(xh, 740, yTop, 'right');
+    h += SVG.poly([[x0, yBase], [x0 + B * s, yBase], [x0 + B * s, gy], [x0, gy]], 'conc', 'data-k="B"');
+    h += SVG.rect(xs, yTop, t * s, H * s - tb * s, 'conc');
+    h += '<g data-k="key">' + SVG.rect(kx, gy, kw, hk, 'conc') + SVG.label(kx + kw + 6, gy + hk - 4, 'κλειδί', 'lbl-conc', 'start') + SVG.dim(kx + kw + 30, gy, kx + kw + 30, gy + hk, 'h = ' + fmt(r.h, 2), 8) + '</g>';
+    var cx1 = xs + t * s / 2, cy1 = (yTop + yBase) / 2;
+    h += '<g data-k="W1">' + SVG.arrow(cx1, cy1 - 35, cx1, cy1 + 35, 'weight') + SVG.label(cx1 + 14, cy1 + 5, tsub('W', '1'), 'math', 'start') + '</g>';
+    var cx2 = x0 + B * s / 2, cy2 = yBase + tb * s / 2;
+    h += '<g data-k="W2">' + SVG.arrow(cx2, cy2 - 6, cx2, cy2 + 40, 'weight') + SVG.label(cx2 - 10, cy2 + 36, tsub('W', '2'), 'math', 'end') + '</g>';
+    var cx3 = xh + L * s / 2, cy3 = (yTop + yBase) / 2;
+    h += '<g data-k="W3">' + SVG.arrow(cx3, cy3 - 35, cx3, cy3 + 35, 'weight') + SVG.label(cx3 + 14, cy3 + 5, tsub('W', '3'), 'math', 'start') + '</g>';
+    var wB = Math.min(90, r.sa * 4);
+    h += '<g data-k="Pa">' + SVG.pressure(xe, yTop, gy, 0, wB, 1, 'load-fill', '', 5) + SVG.arrow(xe + wB + 40, gy - r.armPa * s, xe + 4, gy - r.armPa * s, 'load') + SVG.label(xe + wB + 46, gy - r.armPa * s + 4, tsub('P', 'a'), 'lbl-load math', 'start') + '</g>';
+    var yF = gy - q.hF * s;
+    h += '<g data-k="Fx">' + SVG.arrow(xe + 130, yF, xh + t * s + 4, yF, 'load', '', 4) + SVG.label(xe + 134, yF + 4, tsub('E', 'x') + ' = ' + fmt(q.Fx, 0), 'lbl-load math', 'start') + '</g>';
+    // passive on key + base (left side, below base level)
+    var wA = Math.min(70, r.spA * 0.35), wBp = Math.min(90, r.spB * 0.35);
+    h += '<g data-k="Pp">' + SVG.pressure(x0, gy, gy + hk, wA, wBp, -1, 'fill-green', '', 3) + SVG.arrow(x0 - wBp - 40, gy + hk / 2, x0 - 4, gy + hk / 2, 'fg', 'stroke="var(--ok)"', 3) + SVG.label(x0 - wBp - 44, gy + hk / 2 + 4, tsub('P', 'p'), 'math', 'end') + '</g>';
+    h += '<g data-k="A">' + SVG.point(x0, gy, 'A', -16, -8) + '</g>' + SVG.point(x0, gy + hk, 'B', -16, 14);
+    h += '<g data-k="L">' + SVG.dim(xh, yBase - 8, xe, yBase - 8, 'L = ' + fmt(r.L, 2) + ' m', -18) + '</g>';
+    h += SVG.dim(x0, yBase - 8, xs, yBase - 8, '0.7', -18);
+    h += SVG.dim(x0 - 60, yTop, x0 - 60, gy, 'H = ' + fmt(H, 1) + ' m', -8);
+    h += '<g data-k="Bp">' + SVG.dim(x0 + 2 * Math.abs(r.e0) * s * (r.e0 < 0 ? 0 : 1), gy + hk + 14, x0 + 2 * Math.abs(r.e0) * s * (r.e0 < 0 ? 0 : 1) + r.Bp * s, gy + hk + 14, 'B′ = ' + fmt(r.Bp, 2) + ' m', 16) + '</g>';
+    h += SVG.dim(xe + 20, yBase, xe + 20, gy, '0.5', 8);
+    h += SVG.label(xh + 100, yTop + 24, 'Αμμοχάλικο φ=' + fmt(q.phi, 1) + '°, γ=' + fmt(q.g, 0), 'lbl-muted', 'start');
+    h += SVG.label(760, gy + 60, 'Άργιλος cu = ' + fmt(q.cu, 0) + ' kPa, φu = 0', 'lbl-muted', 'end');
+    return h + SVG.close();
+  },
+  figcap: 'Η σεισμική δύναμη Eₓ δρα 2 m πάνω από τη βάση. Η παθητική αντίσταση Pₚ κινητοποιείται μπροστά από το κλειδί (από το Α ως το Β).',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('K_a') + '</dt><dd>' + fmt(r.Ka, 3) + '</dd><dt>' + m('P_a') + '</dt><dd>' + fmt(r.Pa, 1) + ' kN/m</dd><dt>' + m('L') + '</dt><dd><b>' + fmt(r.L, 1) + ' m</b></dd><dt>' + m('B\'') + '</dt><dd>' + fmt(r.Bp, 2) + ' m</dd><dt>' + m('FS_{ολ}') + ' (χωρίς κλειδί)</dt><dd>' + fmt(r.FS1, 2) + '</dd><dt>' + m('h') + ' κλειδιού</dt><dd><b>' + fmt(r.h, 2) + ' m</b></dd></dl>'; },
+  steps: [
+    {
+      title: 'Κατακόρυφες δυνάμεις', hl: ['W1', 'W2', 'W3'],
+      body: function (q, r) {
+        return eqs([
+          ['W_1 = (H-0.5)\\,γ_c\\,0.5 = ' + fmt(r.hs, 1) + '\\times 24\\times 0.5 = \\hl{' + fmt(r.W1, 1) + '\\unit{kN}}', 'κορμός, μοχλοβραχίονας από Α: 0.7+0.25 = 0.95 m'],
+          ['W_2 = (1.2 + L)\\,γ_c\\,0.5 = 12\\,(1.2+L)', 'πέλμα'],
+          ['W_3 = (H-0.5)\\,γ\\,L = ' + fmt(r.c3, 1) + '\\,L', 'επίχωση']
+        ]);
+      }
+    },
+    {
+      title: 'Ενεργητικές ωθήσεις', hl: ['Pa'],
+      body: function (q, r) {
+        return eqs([
+          ['K_a = \\tan^2(45° - φ/2) = \\tan^2(' + fmt(45 - q.phi / 2, 2) + '°) = \\hl{' + fmt(r.Ka, 3) + '}'],
+          ['σ_a = γ\\,H\\,K_a = ' + fmt(q.g, 0) + '\\times' + fmt(q.H, 1) + '\\times' + fmt(r.Ka, 3) + ' = ' + fmt(r.sa, 1) + '\\unit{kPa}'],
+          ['P_a = \\frac{1}{2}σ_a H = \\hl{' + fmt(r.Pa, 1) + '\\unit{kN/m}}', 'στο H/3 = ' + fmt(r.armPa, 2) + ' m → M = ' + fmt(r.MPa, 1) + ' kNm']
+        ]);
+      }
+    },
+    {
+      title: '(α) Ροπές ως προς Α και μήκος L για e = 0', hl: ['A', 'L', 'B'],
+      cap: 'Χωρίς Eₓ και χωρίς κλειδί: η συνισταμένη να περνά από το μέσο της βάσης.',
+      body: function (q, r) {
+        var a05 = 1.2;
+        return table(['Δύναμη', 'kN', 'Μοχλοβραχίονας (m)', 'Ροπή ως προς Α (kNm)'], [
+          [m('W_1'), fmt(r.W1, 1), fmt(r.arm1, 2), '+' + fmt(r.W1 * r.arm1, 1)],
+          [m('W_2'), m('12(1.2+L)'), m('\\frac{1.2+L}{2}'), m('+6(1.2+L)^2')],
+          [m('W_3'), m(fmt(r.c3, 1) + 'L'), m('1.2+\\frac{L}{2}'), m('+(' + fmt(r.c3 * 1.2, 1) + 'L + ' + fmt(r.c3 / 2, 1) + 'L^2)')],
+          [m('P_a'), fmt(r.Pa, 1), fmt(r.armPa, 2), '−' + fmt(r.MPa, 1)]
+        ]) + eqs([
+          ['\\frac{\\sum M_A}{\\sum V} = \\frac{B}{2} = \\frac{1.2+L}{2} \\;\\Rightarrow\\; L = ' + fmt(r.Lex, 2) + ' \\approx \\hl{' + fmt(r.L, 1) + '\\unit{m}},\\quad B = \\hl{' + fmt(r.B, 1) + '\\unit{m}}'],
+          ['\\sum V = ' + fmt(r.SV, 1) + '\\unit{kN},\\quad \\sum M_A = ' + fmt(r.SM, 1) + '\\unit{kNm}', 'με το επιλεγμένο L']
+        ]);
+      }
+    },
+    {
+      title: '(β) Εκκεντρότητα με το σεισμικό φορτίο → ενεργό πλάτος B′', hl: ['Fx', 'Bp'],
+      cap: 'Η ροπή της Eₓ μετακινεί τη συνισταμένη προς το Α. Το ενεργό πλάτος B′ = B − 2|e| μεταφέρει τα φορτία.',
+      body: function (q, r) {
+        return eqs([
+          ['M_{E_x} = E_x\\cdot' + fmt(q.hF, 1) + ' = ' + fmt(q.Fx, 0) + '\\times' + fmt(q.hF, 1) + ' = ' + fmt(r.MF, 1) + '\\unit{kNm}', 'ανατρεπτική'],
+          ['x̄ = \\frac{\\sum M_A - M_{E_x}}{\\sum V} = \\frac{' + fmt(r.SM, 1) + ' - ' + fmt(r.MF, 1) + '}{' + fmt(r.SV, 1) + '} = ' + fmt(r.xbar, 3) + '\\unit{m}'],
+          ['e_0 = x̄ - \\frac{B}{2} = ' + fmt(r.xbar, 3) + ' - ' + fmt(r.B / 2, 2) + ' = ' + fmt(r.e0, 2) + '\\unit{m}'],
+          ['B\' = B - 2|e_0| = ' + fmt(r.B, 1) + ' - ' + fmt(2 * Math.abs(r.e0), 2) + ' = \\hl{' + fmt(r.Bp, 2) + '\\unit{m}}']
+        ]);
+      }
+    },
+    {
+      title: '(β) Συντελεστής ασφαλείας έναντι ολίσθησης', hl: ['Bp', 'Pa', 'Fx'],
+      body: function (q, r) {
+        return eqs([
+          ['R = c_u\\,B\' = ' + fmt(q.cu, 0) + '\\times' + fmt(r.Bp, 2) + ' = \\hl{' + fmt(r.R, 1) + '\\unit{kN/m}}', 'αστράγγιστη αντίσταση στη βάση'],
+          ['\\sum F_x = P_a + E_x = ' + fmt(r.Pa, 1) + ' + ' + fmt(q.Fx, 0) + ' = ' + fmt(r.SFx, 1) + '\\unit{kN/m}'],
+          ['FS_{ολ} = \\frac{R}{\\sum F_x} = \\frac{' + fmt(r.R, 1) + '}{' + fmt(r.SFx, 1) + '} = \\hl{' + fmt(r.FS1, 2) + '}' + (r.FS1 < 1 ? ' \\lt 1\\;\\text{→ ολισθαίνει!}' : '')]
+        ]) + note('Οι σημειώσεις γράφουν ΣFx = 36.4 + 62 = 98.4 kN (αντί 36.6 + 62 = 98.6), χωρίς επίπτωση στο αποτέλεσμα FS ≈ 0.81.');
+      }
+    },
+    {
+      title: '(γ) Παθητικές τάσεις μπροστά από το κλειδί', hl: ['Pp', 'key', 'A'],
+      cap: 'Στο επίπεδο της βάσης (Α) η κατακόρυφη τάση είναι ΣV/B′. Με φ = 0 είναι Kp = 1 και η παθητική τάση αυξάνει κατά 2cu.',
+      body: function (q, r) {
+        return eqs([
+          ['K_p = \\tan^2(45° + 0/2) = 1', 'έδαφος θεμελίωσης: φ_u = 0'],
+          ['σ_{vA} = \\frac{\\sum V}{B\'} = \\frac{' + fmt(r.SV, 1) + '}{' + fmt(r.Bp, 2) + '} = ' + fmt(r.svA, 1) + '\\unit{kPa},\\quad σ_{vB} = σ_{vA} + γ h'],
+          ['σ_{pA} = σ_{vA}K_p + 2c_u\\sqrt{K_p} = ' + fmt(r.svA, 1) + ' + 2\\times' + fmt(q.cu, 0) + ' = \\hl{' + fmt(r.spA, 1) + '\\unit{kPa}}'],
+          ['σ_{pB} = ' + fmt(r.spA, 1) + ' + ' + fmt(q.g, 0) + 'h'],
+          ['P_p = \\frac{σ_{pA}+σ_{pB}}{2}\\,h = \\frac{' + fmt(2 * r.spA, 1) + ' + ' + fmt(q.g, 0) + 'h}{2}\\,h']
+        ]);
+      }
+    },
+    {
+      title: '(γ) Ύψος κλειδιού για τον απαιτούμενο FS', hl: ['Pp', 'key'],
+      body: function (q, r) {
+        return eqs([
+          ['FS = \\frac{c_u B\' + P_p}{\\sum F_x} = \\frac{' + fmt(r.R, 1) + ' + \\frac{' + fmt(2 * r.spA, 1) + ' + ' + fmt(q.g, 0) + 'h}{2}\\,h}{' + fmt(r.SFx, 1) + '} = ' + fmt(q.FSt, 1)],
+          ['\\Rightarrow\\; ' + fmt(q.g / 2, 0) + 'h^2 + ' + fmt(r.spA, 1) + 'h - ' + fmt(q.FSt * r.SFx - r.R, 1) + ' = 0 \\;\\Rightarrow\\; h = \\hl{' + fmt(r.h, 2) + '\\unit{m}}', 'P_p = ' + fmt(r.Pph, 1) + ' kN/m']
+        ]) + (r.h === 0 ? note('Ο FS χωρίς κλειδί ήδη υπερβαίνει τον απαιτούμενο: δεν χρειάζεται κλειδί.') : '');
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('L \\approx ' + fmt(r.L, 1) + '\\unit{m},\\quad FS_{ολ} = ' + fmt(r.FS1, 2) + ',\\quad h \\approx ' + fmt(r.h, 2) + '\\unit{m}') + '</div><p>Χωρίς κλειδί ο τοίχος ' + (r.FS1 < 1 ? 'ολισθαίνει υπό το σεισμικό φορτίο' : 'έχει FS = ' + fmt(r.FS1, 2)) + '. Κλειδί ύψους ' + fmt(r.h, 2) + ' m κινητοποιεί παθητική αντίσταση ' + fmt(r.Pph, 0) + ' kN/m και δίνει FS = ' + fmt(q.FSt, 1) + '.</p>'; }
+});
+
+/* ===================== ΑΣΚΗΣΗ 4 ===================== */
+EX.push({
+  id: 'b4', num: 4, group: 'DIN 4017 – λοξή & έκκεντρη φόρτιση', source: 'Άσκηση 4',
+  title: 'Φωτιστικός πυλώνας: βάθος θεμελίωσης χωρίς αδρανή περιοχή και FS κατά DIN 4017',
+  tags: ['Εκκεντρότητα', 'DIN 4017', 'Άργιλος φ=0', 'Επαναληπτική λύση'],
+  statement: p('Φωτιστικός πυλώνας θεμελιώνεται σε τετραγωνικό θεμέλιο ΩΣ ' + m('3\\times 3\\unit{m}') + '. Δέχεται οριζόντια δύναμη ανέμου ' + m('F_x = 18.75\\unit{kN}') + ' με σημείο εφαρμογής 10 m από την επιφάνεια του εδάφους.') +
+    '<ol><li>Να υπολογίσετε το απαιτούμενο βάθος θεμελίωσης ώστε να μην αναπτύσσεται αδρανής περιοχή. Πόση είναι η μέγιστη τάση θεμελίωσης;</li><li>Να υπολογίσετε τον συντελεστή ασφαλείας έναντι φέρουσας ικανότητας (DIN 4017).</li></ol>' +
+    p('<b>Παραδοχές:</b> η ροπή υπολογίζεται στη στάθμη έδρασης (συμπεριλαμβάνεται το βάθος), δρα σε μία διεύθυνση. Έδαφος: ' + m('c = 21.2\\unit{kPa},\\; φ = 0,\\; γ = 20\\unit{kN/m³}') + '. Σκυρόδεμα ' + m('γ_c = 25\\unit{kN/m³}') + ' (το κατακόρυφο φορτίο είναι το βάρος του θεμελίου).'),
+  givens: [
+    { key: 'Fx', label: 'Δύναμη ανέμου Fx', unit: 'kN', value: 18.75, min: 5, max: 40, step: 0.25 },
+    { key: 'hF', label: 'Ύψος εφαρμογής από έδαφος', unit: 'm', value: 10, min: 4, max: 16, step: 0.5, dec: 1 },
+    { key: 'B', label: 'Πλευρά θεμελίου B', unit: 'm', value: 3, min: 2, max: 4.5, step: 0.25 },
+    { key: 'c', label: 'Συνοχή c (cu)', unit: 'kPa', value: 21.2, min: 10, max: 60, step: 0.2, dec: 1 },
+    { key: 'g', label: 'Ειδικό βάρος εδάφους γ', unit: 'kN/m³', value: 20, min: 16, max: 22, step: 0.5, dec: 1 }
+  ],
+  compute: function (q) {
+    var gc = 25, B = q.B, e = B / 6;
+    var d = q.Fx * q.hF / (e * B * B * gc - q.Fx); if (d < 0 || !isFinite(d)) d = NaN;
+    var V = B * B * d * gc, M = q.Fx * (q.hF + d), qavg = V / (B * B), qmax = qavg * (1 + 6 * e / B), qmin = qavg * (1 - 6 * e / B);
+    var Bp = B - 2 * e, L = B, Ap = Bp * L;
+    var Nc = 5, Nd = 1, Nb = 0, Vc = 1 + 0.2 * Bp / L, Vd = 1, Vb = 1 + 0.3 * Bp / L; // Vb αδιάφορος (Nb=0)
+    var p0 = q.g * d, qappnet = V / Ap - p0;
+    var Kc = function (FS) { var x = 1 - FS * q.Fx / (Ap * q.c); return x > 0 ? 0.5 + 0.5 * Math.sqrt(x) : NaN; };
+    var qult = function (FS) { return q.c * Nc * Kc(FS) * Vc + p0; };
+    var FScalc = function (FS) { return (qult(FS) - p0) / qappnet; };
+    var FS = solve(function (f) { return FScalc(f) - f; }, 0.2, 6);
+    var trials = [2, 3].map(function (f) { return { FS: f, Kc: Kc(f), qult: qult(f), FSc: FScalc(f) }; });
+    return { gc: gc, B: B, e: e, d: d, V: V, M: M, qavg: qavg, qmax: qmax, qmin: qmin, Bp: Bp, L: L, Ap: Ap, Nc: Nc, Nd: Nd, Nb: Nb, Vc: Vc, Vd: Vd, p0: p0, qappnet: qappnet, kfac: q.Fx / (Ap * q.c), FS: FS, Kc: Kc(FS), qult: qult(FS), trials: trials };
+  },
+  figure: function (q, r, step) {
+    var W = 760, Hc = 480, gy = 230, cx = 400, s = 36, d = isNaN(r.d) ? 1 : Math.min(r.d, 4);
+    var Bw = q.B * s, xl = cx - Bw / 2, xr = cx + Bw / 2, yf = gy + d * s;
+    var h = SVG.open(W, Hc, 'aria-label="Πυλώνας με οριζόντια δύναμη, τετραγωνικό θεμέλιο σε βάθος d και τριγωνική κατανομή τάσεων στη βάση"');
+    h += SVG.soil(40, gy, 680, Hc - gy - 10, 'clay') + SVG.ground(40, xl, gy, 'left') + SVG.ground(xr, 720, gy, 'right');
+    h += '<g data-k="d">' + SVG.rect(xl, gy, Bw, d * s, 'conc') + SVG.dim(xl - 30, gy, xl - 30, yf, 'd = ' + fmt(r.d, 2) + ' m', -8) + '</g>';
+    h += SVG.rect(cx - 6, gy - 190, 12, 190, 'conc');
+    var yF = gy - Math.min(q.hF, 10) * 18;
+    h += '<g data-k="Fx">' + SVG.arrow(cx - 120, yF, cx - 8, yF, 'load', '', 4) + SVG.label(cx - 124, yF + 4, tsub('F', 'x') + ' = ' + fmt(q.Fx, 2) + ' kN', 'lbl-load math', 'end') + SVG.dim(cx + 40, yF, cx + 40, gy, fmt(q.hF, 0) + ' m', 8) + '</g>';
+    h += '<g data-k="V">' + SVG.arrow(cx, gy + 8, cx, yf - 14, 'weight') + SVG.label(cx - 12, gy + 34, 'V = ' + fmt(r.V, 0) + ' kN', 'math', 'end') + '</g>';
+    h += '<g data-k="M"><path d="M' + (cx - 34) + ',' + (gy + 30) + ' A34,18 0 0 1 ' + (cx + 34) + ',' + (gy + 30) + '" fill="none" stroke="var(--load)" stroke-width="2.5" marker-end="url(#arL)"/>' + SVG.label(cx + 40, gy + 26, 'M = ' + fmt(r.M, 1) + ' kNm', 'lbl-load math', 'start') + '</g>';
+    // base pressure: zero at left, qmax at right (Fx pushes to the right -> rotation increases pressure on the right)
+    var hp = Math.min(80, r.qmax * 0.7);
+    h += '<g data-k="q">' + SVG.poly([[xl, yf], [xr, yf], [xr, yf + hp]], 'load-fill a-fade') + SVG.label(xr + 8, yf + hp, tsub('q', 'max') + ' = ' + fmt(r.qmax, 0) + ' kPa', 'lbl-load math', 'start') + SVG.label(xl - 8, yf + 14, tsub('q', 'min') + ' = 0', 'lbl-load math', 'end') + '</g>';
+    h += '<g data-k="Bp">' + SVG.dim(xl + 2 * r.e * s, yf + hp + 14, xr, yf + hp + 14, 'B′ = B − 2e = ' + fmt(r.Bp, 2) + ' m', 16) + '</g>';
+    h += '<g data-k="e">' + SVG.circle(cx + r.e * s, yf, 5, 'marker a-pop') + SVG.label(cx + r.e * s + 8, yf - 6, 'e = B/6', 'lbl-load', 'start') + '</g>';
+    h += SVG.dim(xl, yf + hp + 48, xr, yf + hp + 48, 'B = ' + fmt(q.B, 1) + ' m', 16);
+    h += SVG.label(60, gy + 24, 'c = ' + fmt(q.c, 1) + ' kPa, φ = 0, γ = ' + fmt(q.g, 0), 'lbl-muted', 'start');
+    return h + SVG.close();
+  },
+  figcap: 'Η ροπή στη στάθμη έδρασης περιλαμβάνει και το βάθος d. Με e = B/6 η τάση μηδενίζεται ακριβώς στην αριστερή ακμή (όριο «αδρανούς περιοχής»).',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('e') + '</dt><dd>' + fmt(r.e, 2) + ' m</dd><dt>' + m('d') + '</dt><dd><b>' + fmt(r.d, 2) + ' m</b></dd><dt>' + m('q_{max}') + '</dt><dd>' + fmt(r.qmax, 0) + ' kPa</dd><dt>' + m('q_{ult}') + '</dt><dd>' + fmt(r.qult, 1) + ' kPa</dd><dt>FS</dt><dd><b>' + fmt(r.FS, 2) + '</b></dd></dl>'; },
+  steps: [
+    {
+      title: '(α) Όριο αδρανούς περιοχής: e = B/6', hl: ['e', 'q'],
+      cap: 'Τραπεζοειδής κατανομή τάσης. Για e = B/6 η ελάχιστη τάση γίνεται μηδέν.',
+      body: function (q, r) { return eqs([['q_{max,min} = \\frac{P}{B\\,L}\\left(1 \\pm \\frac{6e}{B}\\right) \\;\\Rightarrow\\; q_{min} = 0 \\;\\text{για}\\; e = \\frac{B}{6} = \\frac{' + fmt(q.B, 1) + '}{6} = \\hl{' + fmt(r.e, 2) + '\\unit{m}}']]); }
+    },
+    {
+      title: '(α) Βάθος θεμελίωσης d', hl: ['Fx', 'M', 'V', 'd'],
+      cap: 'Το μόνο κατακόρυφο φορτίο είναι το ίδιο βάρος του θεμελίου, που μεγαλώνει με το d. Η ροπή επίσης μεγαλώνει με το d.',
+      body: function (q, r) {
+        return eqs([
+          ['e = \\frac{\\sum M}{\\sum V} = \\frac{F_x\\,(' + fmt(q.hF, 0) + ' + d)}{B^2\\,d\\,γ_c} \\;\\Rightarrow\\; ' + fmt(r.e, 2) + ' = \\frac{' + fmt(q.Fx, 2) + '\\,(' + fmt(q.hF, 0) + '+d)}{' + fmt(q.B * q.B * r.gc, 0) + '\\,d}'],
+          ['\\Rightarrow\\; ' + fmt(r.e * q.B * q.B * r.gc, 1) + 'd = ' + fmt(q.Fx * q.hF, 1) + ' + ' + fmt(q.Fx, 2) + 'd \\;\\Rightarrow\\; d = \\hl{' + fmt(r.d, 2) + '\\unit{m}}'],
+          ['V = B^2 d γ_c = ' + fmt(r.V, 0) + '\\unit{kN},\\quad M = F_x(' + fmt(q.hF, 0) + '+d) = ' + fmt(r.M, 1) + '\\unit{kNm}']
+        ]);
+      }
+    },
+    {
+      title: '(α) Μέγιστη τάση θεμελίωσης', hl: ['q'],
+      body: function (q, r) { return eqs([['q_{max} = \\frac{V}{B^2}\\left(1 + \\frac{6e}{B}\\right) = \\frac{' + fmt(r.V, 0) + '}{' + fmt(q.B * q.B, 1) + '}\\,(1+1) = \\hl{' + fmt(r.qmax, 0) + '\\unit{kPa}},\\quad q_{min} = 0']]); }
+    },
+    {
+      title: '(β) Ενεργό πλάτος και συντελεστές DIN 4017 (φ = 0)', hl: ['Bp'],
+      body: function (q, r) {
+        return eqs([
+          ['B\' = B - 2e = \\hl{' + fmt(r.Bp, 2) + '\\unit{m}},\\quad L = ' + fmt(q.B, 1) + '\\unit{m},\\quad A\' = ' + fmt(r.Ap, 1) + '\\unit{m²}'],
+          ['H = ' + fmt(q.Fx, 2) + '\\unit{kN},\\quad V = ' + fmt(r.V, 0) + '\\unit{kN}'],
+          ['φ = 0 \\;\\Rightarrow\\; N_c = 5,\\; N_d = 1,\\; N_b = 0', 'Πίνακας 1 DIN 4017']
+        ]) + dinTableHot(0);
+      }
+    },
+    {
+      title: '(β) Συντελεστές μορφής (ορθογώνιο, φ = 0)', hl: ['Bp'],
+      body: function (q, r) { return eqs([['V_c = 1 + 0.2\\,\\frac{B\'}{L} = 1 + 0.2\\times\\frac{' + fmt(r.Bp, 2) + '}{' + fmt(r.L, 1) + '} = \\hl{' + fmt(r.Vc, 2) + '}'], ['V_d = 1,\\quad V_b:\\;\\text{αδιάφορος (N_b = 0)}']]); }
+    },
+    {
+      title: '(β) Μειωτικός συντελεστής λοξής φόρτισης Kc', hl: ['Fx'],
+      cap: 'Για φ = 0 ο Kc εξαρτάται από τον λόγο της οριζόντιας δύναμης προς την αστράγγιστη αντίσταση B′L′c. Στον DIN μπαίνει το φορτίο σχεδιασμού FS·H, άρα εξαρτάται από τον ζητούμενο FS.',
+      body: function (q, r) {
+        return eqs([
+          ['K_c = 0.5 + 0.5\\sqrt{1 - \\frac{FS\\cdot H}{B\'\\,L\'\\,c}} = 0.5 + 0.5\\sqrt{1 - \\frac{FS\\times' + fmt(q.Fx, 2) + '}{' + fmt(r.Ap, 1) + '\\times' + fmt(q.c, 1) + '}} = 0.5 + 0.5\\sqrt{1 - ' + fmt(r.kfac, 3) + '\\,FS}'],
+          ['K_d = 1,\\quad K_b:\\;\\text{αδιάφορος}']
+        ]);
+      }
+    },
+    {
+      title: '(β) Δοκιμές: FS υποτιθέμενος = FS υπολογιζόμενος', hl: ['q', 'Bp'],
+      body: function (q, r) {
+        var rows = r.trials.map(function (t) { return ['FS = ' + fmt(t.FS, 1), fmt(t.Kc, 3), fmt(t.qult, 1), fmt(t.FSc, 2), Math.abs(t.FSc - t.FS) < 0.1 ? '✔ δεκτό' : '✘ απορρίπτεται']; });
+        rows.push(['FS = ' + fmt(r.FS, 2) + ' (ακριβής λύση)', fmt(r.Kc, 3), fmt(r.qult, 1), fmt(r.FS, 2), '✔']);
+        return eqs([
+          ['q_{ult} = c\\,N_c\\,K_c\\,V_c + γ\\,d\\,N_d\\,K_d\\,V_d = ' + fmt(q.c, 1) + '\\times 5\\times K_c\\times' + fmt(r.Vc, 2) + ' + ' + fmt(r.p0, 0)],
+          ['FS = \\frac{q_{ult} - γ d}{\\frac{V}{B\'L} - γ d} = \\frac{q_{ult} - ' + fmt(r.p0, 0) + '}{' + fmt(r.V / r.Ap, 1) + ' - ' + fmt(r.p0, 0) + '} = \\frac{q_{ult} - ' + fmt(r.p0, 0) + '}{' + fmt(r.qappnet, 1) + '}']
+        ]) + table(['Δοκιμή', m('K_c'), m('q_{ult}') + ' (kPa)', 'FS υπολογ.', ''], rows, rows.length - 1) +
+          note('Η λύση συγκλίνει όταν ο FS που υποθέτουμε στον Kc ισούται με τον FS που προκύπτει. Σημειώσεις: q<sub>ult</sub> = 150.2 και 144.6 kPa, μικρές διαφορές στρογγυλοποίησης του V<sub>c</sub> (1.13).');
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('d = ' + fmt(r.d, 2) + '\\unit{m},\\quad q_{max} = ' + fmt(r.qmax, 0) + '\\unit{kPa},\\quad FS \\approx ' + fmt(r.FS, 1)) + '</div>'; }
+});
+
+/* ===================== ΑΣΚΗΣΗ 5 ===================== */
+EX.push({
+  id: 'b5', num: 5, group: 'Τοίχοι αντιστήριξης', source: 'Άσκηση 5',
+  title: 'Μέγιστο ύψος τοίχου με επιφόρτιση ώστε να μην ανατρέπεται',
+  tags: ['Τοίχος ΩΣ', 'Ανατροπή', 'Επιφόρτιση'],
+  statement: p('Για τον τοίχο αντιστήριξης ΩΣ του σχήματος να υπολογίσετε το μέγιστο ύψος ' + m('H') + ' ώστε να μην ανατρέπεται. Επιφόρτιση ' + m('q = 30\\unit{kPa}') + ' στην επίχωση. Αμμοχάλικο ' + m('φ = 32°,\\; γ = 17\\unit{kN/m³}') + ', σκυρόδεμα ' + m('γ_c = 24\\unit{kN/m³}') + '. Πέλμα: 1.0 m εμπρός, κορμός 0.5 m, 1.5 m πίσω, πάχος 0.5 m.') +
+    p('<b>Παραδοχές:</b> ο τοίχος θεωρείται λείος· λαμβάνεται μόνο η δυσμενής επίπτωση της επιφόρτισης.'),
+  givens: [
+    { key: 'q', label: 'Επιφόρτιση q', unit: 'kPa', value: 30, min: 0, max: 80, step: 5 },
+    { key: 'phi', label: 'Γωνία τριβής φ', unit: '°', value: 32, min: 25, max: 40, step: 0.5, dec: 1 },
+    { key: 'g', label: 'Ειδικό βάρος εδάφους γ', unit: 'kN/m³', value: 17, min: 15, max: 21, step: 0.5, dec: 1 },
+    { key: 'FSt', label: 'Συντελεστής ασφαλείας ανατροπής', unit: '', value: 1.0, min: 1, max: 2.5, step: 0.1, dec: 1 }
+  ],
+  compute: function (q) {
+    var a = 1.0, t = 0.5, Lh = 1.5, tb = 0.5, gc = 24, B = a + t + Lh;
+    var W1 = B * gc * tb, arm1 = B / 2, arm2 = a + t / 2, arm3 = a + t + Lh / 2;
+    var Ka = GEO.Ka(q.phi), kPa = 0.5 * Ka * q.g, kPq = Ka * q.q;
+    var Mstab = function (H) { return W1 * arm1 + (H - tb) * gc * t * arm2 + (H - tb) * q.g * Lh * arm3; };
+    var Mover = function (H) { return kPa * H * H * H / 3 + kPq * H * H / 2; };
+    var H = solve(function (H) { return Mstab(H) - q.FSt * Mover(H); }, 1, 30);
+    var Vq = q.q * Lh, Mq = Vq * arm3;
+    var H2 = solve(function (H) { return Mstab(H) + Mq - q.FSt * Mover(H); }, 1, 40);
+    return { a: a, t: t, Lh: Lh, tb: tb, gc: gc, B: B, W1: W1, arm1: arm1, arm2: arm2, arm3: arm3, Ka: Ka, kPa: kPa, kPq: kPq, H: H, W2: (H - tb) * gc * t, W3: (H - tb) * q.g * Lh, Pa: kPa * H * H, Pq: kPq * H, Mstab: Mstab(H), Mover: Mover(H), MPa: kPa * H * H * H / 3, MPq: kPq * H * H / 2, Vq: Vq, Mq: Mq, H2: H2, c2: gc * t, c3: q.g * Lh };
+  },
+  figure: function (q, r, step) {
+    var H = isNaN(r.H) ? 5 : Math.min(r.H, 9), s = Math.min(36, 300 / H), x0 = 170, gy = 380, a = r.a, t = r.t, Lh = r.Lh, tb = r.tb, B = r.B;
+    var yTop = gy - H * s, yBase = gy - tb * s, xs = x0 + a * s, xh = xs + t * s, xe = xh + Lh * s;
+    var W = 780, Hc = 420;
+    var h = SVG.open(W, Hc, 'aria-label="Τοίχος αντιστήριξης με επιφόρτιση, βάρη, ενεργητική ώθηση εδάφους και ώθηση επιφόρτισης"');
+    h += SVG.soil(xh, yTop, 740 - xh, gy - yTop, 'sand') + SVG.rect(30, gy, 710, Hc - gy - 10, 'soil2');
+    h += SVG.ground(30, xs, gy, 'left') + SVG.ground(xh, 740, yTop, 'right');
+    h += SVG.poly([[x0, yBase], [x0 + B * s, yBase], [x0 + B * s, gy], [x0, gy]], 'conc');
+    h += SVG.rect(xs, yTop, t * s, H * s - tb * s, 'conc');
+    h += '<g data-k="q">' + SVG.udl(xh + 4, xe + 90, yTop, 34, 'q = ' + fmt(q.q, 0) + ' kPa') + '</g>';
+    var cx1 = x0 + B * s / 2, cy1 = yBase + tb * s / 2;
+    h += '<g data-k="W1">' + SVG.arrow(cx1 + 30, cy1 - 4, cx1 + 30, cy1 + 44, 'weight') + SVG.label(cx1 + 42, cy1 + 40, tsub('W', '1'), 'math', 'start') + '</g>';
+    var cx2 = xs + t * s / 2, cy2 = (yTop + yBase) / 2;
+    h += '<g data-k="W2">' + SVG.arrow(cx2, cy2 - 35, cx2, cy2 + 35, 'weight') + SVG.label(cx2 + 14, cy2 + 5, tsub('W', '2'), 'math', 'start') + '</g>';
+    var cx3 = xh + Lh * s / 2, cy3 = (yTop + yBase) / 2;
+    h += '<g data-k="W3">' + SVG.arrow(cx3, cy3 - 35, cx3, cy3 + 35, 'weight') + SVG.label(cx3 + 14, cy3 + 5, tsub('W', '3'), 'math', 'start') + '</g>';
+    var wB = Math.min(90, r.Ka * q.g * H * 3), wQ = Math.min(60, r.Ka * q.q * 3);
+    h += '<g data-k="Pa">' + SVG.pressure(xe, yTop, gy, 0, wB, 1, 'load-fill', '', 5) + SVG.arrow(xe + wB + 40, gy - H * s / 3, xe + 4, gy - H * s / 3, 'load') + SVG.label(xe + wB + 46, gy - H * s / 3 + 4, tsub('P', 'a') + ' (H/3)', 'lbl-load math', 'start') + '</g>';
+    var xq = xe + wB + 150;
+    h += '<g data-k="Pq">' + SVG.pressure(xq, yTop, gy, wQ, wQ, 1, 'fill-red', '', 4) + SVG.arrow(xq + wQ + 40, gy - H * s / 2, xq + 4, gy - H * s / 2, 'load') + SVG.label(xq + wQ + 44, gy - H * s / 2 + 4, tsub('P', 'q') + ' (H/2)', 'lbl-load math', 'start') + SVG.label(xq + wQ / 2, yTop - 6, 'Ka·q', 'lbl-muted') + '</g>';
+    h += '<g data-k="A">' + SVG.point(x0, gy, 'A', -16, 16) + '</g>' + SVG.point(x0 + B * s / 2, gy, 'O', 6, 16);
+    h += SVG.dim(x0, yBase - 8, xs, yBase - 8, '1.0', -18) + SVG.dim(xh, yBase - 8, xe, yBase - 8, '1.5', -18);
+    h += '<g data-k="H">' + SVG.dim(x0 - 60, yTop, x0 - 60, gy, 'H = ' + fmt(r.H, 2) + ' m', -8) + '</g>';
+    h += SVG.label(xs + t * s / 2, yTop - 8, '0.5', 'lbl-muted');
+    h += SVG.label(xh + 10, yTop + 60, 'φ=' + fmt(q.phi, 1) + '°, γ=' + fmt(q.g, 0), 'lbl-muted', 'start');
+    return h + SVG.close();
+  },
+  figcap: 'Δύο ανατρεπτικές ωθήσεις: τριγωνική από το έδαφος (Pₐ στο H/3) και ορθογωνική από την επιφόρτιση (P_q στο H/2). Το βάρος της επιφόρτισης πάνω στο πέλμα αγνοείται (ευνοϊκό).',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('K_a') + '</dt><dd>' + fmt(r.Ka, 3) + '</dd><dt>' + m('P_a') + '</dt><dd>' + fmt(r.Pa, 1) + ' kN/m</dd><dt>' + m('P_q') + '</dt><dd>' + fmt(r.Pq, 1) + ' kN/m</dd><dt>' + m('M_{ευστ}') + ' = ' + m('M_{ανατρ}') + '</dt><dd>' + fmt(r.Mstab, 0) + ' kNm</dd><dt>' + m('H_{max}') + '</dt><dd><b>' + fmt(r.H, 2) + ' m</b></dd></dl>'; },
+  steps: [
+    {
+      title: 'Βάρη συναρτήσει του H', hl: ['W1', 'W2', 'W3'],
+      body: function (q, r) {
+        return eqs([
+          ['W_1 = B\\,γ_c\\,0.5 = ' + fmt(r.B, 1) + '\\times 24\\times 0.5 = \\hl{' + fmt(r.W1, 0) + '\\unit{kN}}', 'πέλμα, μοχλοβραχίονας ' + fmt(r.arm1, 2) + ' m'],
+          ['W_2 = (H-0.5)\\,γ_c\\,0.5 = ' + fmt(r.c2, 0) + 'H - ' + fmt(r.c2 * r.tb, 0), 'κορμός, μοχλοβραχίονας ' + fmt(r.arm2, 2) + ' m'],
+          ['W_3 = (H-0.5)\\,γ\\,1.5 = ' + fmt(r.c3, 1) + 'H - ' + fmt(r.c3 * r.tb, 2), 'επίχωση, μοχλοβραχίονας ' + fmt(r.arm3, 2) + ' m']
+        ]);
+      }
+    },
+    {
+      title: 'Ωθήσεις εδάφους και επιφόρτισης', hl: ['Pa', 'Pq'],
+      body: function (q, r) {
+        return eqs([
+          ['K_a = \\tan^2(45° - ' + fmt(q.phi / 2, 2) + '°) = \\hl{' + fmt(r.Ka, 3) + '}'],
+          ['P_a = \\frac{1}{2}K_a\\,γ\\,H^2 = ' + fmt(r.kPa, 2) + '\\,H^2', 'στο H/3 → M = ' + fmt(r.kPa / 3, 3) + ' H³'],
+          ['P_q = K_a\\,q\\,H = ' + fmt(r.Ka, 3) + '\\times' + fmt(q.q, 0) + '\\,H = ' + fmt(r.kPq, 2) + '\\,H', 'στο H/2 → M = ' + fmt(r.kPq / 2, 2) + ' H²']
+        ]);
+      }
+    },
+    {
+      title: 'Πίνακας ροπών ως προς το Α', hl: ['A'],
+      body: function (q, r) {
+        return table(['Δύναμη', 'Τιμή (kN)', 'Μοχλοβραχίονας (m)', 'Ροπή ως προς Α (kNm)'], [
+          [m('W_1'), fmt(r.W1, 0), fmt(r.arm1, 2), '+' + fmt(r.W1 * r.arm1, 1)],
+          [m('W_2'), m(fmt(r.c2, 0) + 'H - ' + fmt(r.c2 * r.tb, 0)), fmt(r.arm2, 2), m('+(' + fmt(r.c2 * r.arm2, 1) + 'H - ' + fmt(r.c2 * r.tb * r.arm2, 1) + ')')],
+          [m('W_3'), m(fmt(r.c3, 1) + 'H - ' + fmt(r.c3 * r.tb, 2)), fmt(r.arm3, 2), m('+(' + fmt(r.c3 * r.arm3, 2) + 'H - ' + fmt(r.c3 * r.tb * r.arm3, 2) + ')')],
+          [m('P_a'), m(fmt(r.kPa, 2) + 'H^2'), m('H/3'), m('-' + fmt(r.kPa / 3, 3) + 'H^3')],
+          [m('P_q'), m(fmt(r.kPq, 2) + 'H'), m('H/2'), m('-' + fmt(r.kPq / 2, 2) + 'H^2')]
+        ]);
+      }
+    },
+    {
+      title: 'Δυσμενής περίπτωση επιφόρτισης', hl: ['q', 'W3'],
+      cap: 'Η επιφόρτιση πάνω στο πέλμα θα έδινε πρόσθετο κατακόρυφο φορτίο και ροπή ευστάθειας: αγνοείται.',
+      body: function (q, r) {
+        return p('Αν η επιφόρτιση εκτεινόταν και πάνω από το πέλμα θα έδινε ' + m('V_q = q\\times 1.5 = ' + fmt(r.Vq, 0) + '\\unit{kN}') + ' με ροπή ευστάθειας ' + m('M_q = V_q\\times' + fmt(r.arm3, 2) + ' = ' + fmt(r.Mq, 1) + '\\unit{kNm}') + '. Η <b>δυσμενέστερη</b> περίπτωση είναι χωρίς αυτό το φορτίο (μόνο η ώθηση ' + m('P_q') + ').') +
+          note('Αν συμπεριληφθεί το V<sub>q</sub>, το μέγιστο ύψος γίνεται H ≈ ' + fmt(r.H2, 1) + ' m (μη συντηρητικό).');
+      }
+    },
+    {
+      title: 'Ισορροπία ροπών: FS = 1 → H', hl: ['H', 'A'],
+      body: function (q, r) {
+        return eqs([
+          ['FS = \\frac{M_{ευστ}}{M_{ανατρ}} = \\frac{' + fmt(r.W1 * r.arm1, 1) + ' + ' + fmt(r.c2 * r.arm2 + r.c3 * r.arm3, 2) + 'H - ' + fmt(r.c2 * r.tb * r.arm2 + r.c3 * r.tb * r.arm3, 2) + '}{' + fmt(r.kPa / 3, 3) + 'H^3 + ' + fmt(r.kPq / 2, 2) + 'H^2} = ' + fmt(q.FSt, 1)],
+          ['\\Rightarrow\\; H = \\hl{' + fmt(r.H, 2) + '\\unit{m}} \\approx ' + fmt(Math.round(r.H * 2) / 2, 1) + '\\unit{m}', 'λύση με δοκιμές: M_ευστ = ' + fmt(r.Mstab, 0) + ', M_ανατρ = ' + fmt(r.Mover, 0) + ' kNm']
+        ]);
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('H_{max} \\approx ' + fmt(r.H, 1) + '\\unit{m}') + '</div><p>Για μεγαλύτερο ύψος η ανατρεπτική ροπή των ωθήσεων (που αυξάνει με H³) υπερβαίνει τη ροπή ευστάθειας των βαρών (που αυξάνει γραμμικά με H).</p>'; }
+});
+
+/* ===================== ΑΣΚΗΣΗ 6 ===================== */
+EX.push({
+  id: 'b6', num: 6, group: 'Γενική εξίσωση φέρουσας ικανότητας', source: 'Άσκηση 6',
+  title: 'Απαιτούμενο βάθος θεμελίωσης τετραγωνικού θεμελίου για FS = 3',
+  tags: ['Γενική εξίσωση', 'Υδροφόρος', 'c–φ έδαφος'],
+  statement: p('Να υπολογιστεί το απαιτούμενο βάθος θεμελίωσης τετραγωνικού θεμελίου ' + m('3\\times 3\\unit{m}') + ' ώστε ο συντελεστής ασφαλείας έναντι φέρουσας ικανότητας να ισούται με 3. Ο υδροφόρος ορίζοντας βρίσκεται στη στάθμη θεμελίωσης και το έδαφος θεωρείται γενικώς κορεσμένο.') +
+    '<ul><li>Κατακόρυφο φορτίο ' + m('V = 362\\unit{t} = 3620\\unit{kN}') + '</li><li>Συνοχή ' + m('c = 0.12\\unit{kg/cm²} = 12\\unit{kPa}') + ', γωνία τριβής ' + m('φ = 25°') + '</li><li>Ειδικό βάρος κορεσμένου εδάφους ' + m('γ_κ = 20\\unit{kN/m³}') + '</li></ul>',
+  givens: [
+    { key: 'V', label: 'Κατακόρυφο φορτίο V', unit: 'kN', value: 3620, min: 1000, max: 6000, step: 20 },
+    { key: 'B', label: 'Πλευρά θεμελίου B', unit: 'm', value: 3, min: 2, max: 5, step: 0.25 },
+    { key: 'c', label: 'Συνοχή c', unit: 'kPa', value: 12, min: 0, max: 40, step: 1 },
+    { key: 'phi', label: 'Γωνία τριβής φ', unit: '°', value: 25, min: 15, max: 35, step: 1, dec: 0 },
+    { key: 'g', label: 'Ειδικό βάρος γκ', unit: 'kN/m³', value: 20, min: 17, max: 22, step: 0.5, dec: 1 },
+    { key: 'FSt', label: 'Απαιτούμενος FS', unit: '', value: 3, min: 1.5, max: 4, step: 0.1, dec: 1 }
+  ],
+  compute: function (q) {
+    var Nc = GEO.Nc(q.phi), Nq = GEO.Nq(q.phi), Ng = GEO.Ng(q.phi), BL = 1;
+    var Sc = 1 + Nq / Nc * BL, Sq = 1 + BL * tand(q.phi), Sg = 1 - 0.4 * BL, gsub = q.g - 10;
+    var A = q.c * Nc * Sc, Bt = 0.5 * gsub * q.B * Ng * Sg, Ct = q.g * Nq * Sq; // q_ult = A + Bt + Ct·Df
+    var qapp = q.V / (q.B * q.B);
+    var Df = solve(function (D) { return (A + Bt + (Ct - q.g) * D) - q.FSt * (qapp - q.g * D); }, 0, 10);
+    return { Nc: Nc, Nq: Nq, Ng: Ng, Sc: Sc, Sq: Sq, Sg: Sg, gsub: gsub, A: A, Bt: Bt, Ct: Ct, qapp: qapp, Df: Df, qult: A + Bt + Ct * Df, qnet: A + Bt + (Ct - q.g) * Df, qappnet: qapp - q.g * Df };
+  },
+  figure: function (q, r, step) {
+    return footingSection({ B: q.B, Df: isNaN(r.Df) ? 1 : r.Df, Vlabel: 'V = ' + fmt(q.V, 0) + ' kN', wt: true, step: step, wedgeStep: 2, phi: q.phi, labelsAbove: ['γ₁ = γκ = ' + fmt(q.g, 0) + ' kN/m³', 'c = ' + fmt(q.c, 0) + ' kPa, φ = ' + fmt(q.phi, 0) + '°'], labelsBelow: ['γ₂ = γ′ = γκ − γw = ' + fmt(r.gsub, 0) + ' kN/m³'] });
+  },
+  figcap: 'Πάνω από τη στάθμη θεμελίωσης δρα το ολικό βάρος γ₁·Df (υπερκείμενο). Κάτω από αυτήν, στη ζώνη αστοχίας, το έδαφος είναι βυθισμένο: γ′ = γκ − γw.',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('N_c, N_q, N_γ') + '</dt><dd>' + fmt(r.Nc, 1) + ', ' + fmt(r.Nq, 1) + ', ' + fmt(r.Ng, 1) + '</dd><dt>' + m('S_c, S_q, S_γ') + '</dt><dd>' + fmt(r.Sc, 2) + ', ' + fmt(r.Sq, 2) + ', ' + fmt(r.Sg, 2) + '</dd><dt>' + m('q_{app}') + '</dt><dd>' + fmt(r.qapp, 1) + ' kPa</dd><dt>' + m('D_f') + '</dt><dd><b>' + fmt(r.Df, 2) + ' m</b></dd></dl>'; },
+  steps: [
+    {
+      title: 'Συντελεστές φέρουσας ικανότητας', hl: ['wedge'],
+      body: function (q, r) { return p('Για ' + m('φ = ' + fmt(q.phi, 0) + '°') + ' (Prandtl–Reissner για N<sub>q</sub>, N<sub>c</sub> και Hansen για N<sub>γ</sub>):') + eq('N_c = \\hl{' + fmt(r.Nc, 1) + '},\\quad N_q = \\hl{' + fmt(r.Nq, 1) + '},\\quad N_γ = \\hl{' + fmt(r.Ng, 1) + '}') + TABLES.bc(q.phi); }
+    },
+    {
+      title: 'Συντελεστές μορφής (τετράγωνο, B/L = 1)', hl: ['B'],
+      body: function (q, r) { return eqs([['S_c = 1 + \\frac{N_q}{N_c}\\,\\frac{B}{L} = 1 + \\frac{' + fmt(r.Nq, 1) + '}{' + fmt(r.Nc, 1) + '} = \\hl{' + fmt(r.Sc, 2) + '}'], ['S_q = 1 + \\frac{B}{L}\\tan φ = 1 + \\tan ' + fmt(q.phi, 0) + '° = \\hl{' + fmt(r.Sq, 2) + '}'], ['S_γ = 1 - 0.4\\,\\frac{B}{L} = \\hl{' + fmt(r.Sg, 2) + '}']]); }
+    },
+    {
+      title: 'Οριακή φέρουσα ικανότητα συναρτήσει του Df', hl: ['Df', 'WT', 'wedge'],
+      cap: 'Τρεις όροι: συνοχή, βάρος εδάφους στη ζώνη αστοχίας (βυθισμένο γ′) και υπερκείμενο γ·Df.',
+      body: function (q, r) {
+        return eqs([
+          ['q\'_{ult} = c\\,N_c\\,S_c + \\frac{1}{2}\\,γ\'\\,B\\,N_γ\\,S_γ + γ\\,D_f\\,N_q\\,S_q'],
+          ['= ' + fmt(q.c, 0) + '\\cdot' + fmt(r.Nc, 1) + '\\cdot' + fmt(r.Sc, 2) + ' + 0.5\\cdot(' + fmt(q.g, 0) + '-10)\\cdot' + fmt(q.B, 1) + '\\cdot' + fmt(r.Ng, 1) + '\\cdot' + fmt(r.Sg, 2) + ' + ' + fmt(q.g, 0) + '\\,D_f\\cdot' + fmt(r.Nq, 1) + '\\cdot' + fmt(r.Sq, 2)],
+          ['= ' + fmt(r.A, 1) + ' + ' + fmt(r.Bt, 1) + ' + ' + fmt(r.Ct, 1) + '\\,D_f = \\hl{' + fmt(r.A + r.Bt, 1) + ' + ' + fmt(r.Ct, 1) + '\\,D_f}']
+        ]) + note('Σημειώσεις: ο όρος συνοχής αναγράφεται 337.6 (τυπογραφικό· 12·20.7·1.52 = 377.6), το άθροισμα 438.8 είναι σωστό.');
+      }
+    },
+    {
+      title: 'Καθαρές τάσεις', hl: ['V', 'Df'],
+      body: function (q, r) {
+        return eqs([
+          ['q\'_{net} = q\'_{ult} - γ\\,D_f = ' + fmt(r.A + r.Bt, 1) + ' + ' + fmt(r.Ct - q.g, 1) + '\\,D_f'],
+          ['q_{app,net} = \\frac{V}{B^2} - γ\\,D_f = \\frac{' + fmt(q.V, 0) + '}{' + fmt(q.B * q.B, 0) + '} - ' + fmt(q.g, 0) + '\\,D_f = ' + fmt(r.qapp, 1) + ' - ' + fmt(q.g, 0) + '\\,D_f']
+        ]);
+      }
+    },
+    {
+      title: 'Συντελεστής ασφαλείας → Df', hl: ['Df'],
+      body: function (q, r) {
+        return eqs([
+          ['FS = \\frac{q\'_{net}}{q_{app,net}} = ' + fmt(q.FSt, 1) + ' \\;\\Rightarrow\\; ' + fmt(r.A + r.Bt, 1) + ' + ' + fmt(r.Ct - q.g, 1) + 'D_f = ' + fmt(q.FSt, 1) + '\\,(' + fmt(r.qapp, 1) + ' - ' + fmt(q.g, 0) + 'D_f)'],
+          ['\\Rightarrow\\; D_f = \\hl{' + fmt(r.Df, 2) + '\\unit{m}}', 'q′_ult = ' + fmt(r.qult, 0) + ' kPa, q_app,net = ' + fmt(r.qappnet, 1) + ' kPa']
+        ]);
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('D_f \\approx ' + fmt(r.Df, 2) + '\\unit{m}') + '</div><p>Το βάθος θεμελίωσης αυξάνει τη φέρουσα ικανότητα μέσω του όρου γ·Df·Nq·Sq και ταυτόχρονα μειώνει την καθαρή επιβαλλόμενη τάση.</p>'; }
+});
+
+/* ===================== ΑΣΚΗΣΗ 7 ===================== */
+EX.push({
+  id: 'b7', num: 7, group: 'Γενική εξίσωση φέρουσας ικανότητας', source: 'Άσκηση 7',
+  title: 'Απαιτούμενη διάσταση τετραγωνικού θεμελίου σε άμμο για FS = 2',
+  tags: ['Γενική εξίσωση', 'Άμμος', 'Υδροφόρος'],
+  statement: p('Να υπολογιστεί η απαιτούμενη διάσταση τετραγωνικού θεμελίου ώστε ο συντελεστής ασφαλείας έναντι φέρουσας ικανότητας στην κατακόρυφη διεύθυνση να ισούται με 2. Το έδαφος είναι αμμώδες και ο υδροφόρος ορίζοντας βρίσκεται στη στάθμη θεμελίωσης.') +
+    '<ul><li>Βάθος θεμελίωσης ' + m('D_f = 2\\unit{m}') + ', κατακόρυφο φορτίο ' + m('V = 2880\\unit{kN}') + '</li><li>Γωνία τριβής ' + m('φ = 32°') + ', ' + m('c = 0') + '</li><li>Κορεσμένο ειδικό βάρος ' + m('γ_{sat} = 20\\unit{kN/m³}') + ', ολικό (πάνω από τον Υ.Ο.) ' + m('γ = 17\\unit{kN/m³}') + '</li></ul>' +
+    eq('q_{ult} = c\\,N_c\\,S_c + σ_{z,D}\\,N_q\\,S_q + \\frac{1}{2}\\,γ\\,B\\,N_γ\\,S_γ', 'σ_z,D = κατακόρυφη τάση στη στάθμη θεμελίωσης'),
+  givens: [
+    { key: 'V', label: 'Κατακόρυφο φορτίο V', unit: 'kN', value: 2880, min: 1000, max: 6000, step: 20 },
+    { key: 'Df', label: 'Βάθος θεμελίωσης Df', unit: 'm', value: 2, min: 0.5, max: 4, step: 0.25 },
+    { key: 'phi', label: 'Γωνία τριβής φ', unit: '°', value: 32, min: 25, max: 40, step: 1, dec: 0 },
+    { key: 'g', label: 'Ειδικό βάρος πάνω από Υ.Ο. γ', unit: 'kN/m³', value: 17, min: 15, max: 20, step: 0.5, dec: 1 },
+    { key: 'gsat', label: 'Κορεσμένο ειδικό βάρος γsat', unit: 'kN/m³', value: 20, min: 18, max: 22, step: 0.5, dec: 1 },
+    { key: 'FSt', label: 'Απαιτούμενος FS', unit: '', value: 2, min: 1.5, max: 4, step: 0.1, dec: 1 }
+  ],
+  compute: function (q) {
+    var Nc = GEO.Nc(q.phi), Nq = GEO.Nq(q.phi), Ng = GEO.Ng(q.phi), Sq = 1 + tand(q.phi), Sg = 0.6, gsub = q.gsat - 10;
+    var szD = q.g * q.Df, A = szD * Nq * Sq, k = 0.5 * gsub * Ng * Sg; // q_ult = A + k·B
+    var FS = function (B) { return (A + k * B - szD) / (q.V / (B * B) - szD); };
+    var B = solve(function (B) { return (A + k * B - szD) - q.FSt * (q.V / (B * B) - szD); }, 0.5, 12);
+    var trials = [B - 0.5, B, B + 0.5].map(function (b) { b = Math.round(b * 2) / 2; return { B: b, qult: A + k * b, net: A + k * b - szD, app: q.V / (b * b) - szD, FS: FS(b) }; });
+    return { Nc: Nc, Nq: Nq, Ng: Ng, Sq: Sq, Sg: Sg, gsub: gsub, szD: szD, A: A, k: k, B: B, qult: A + k * B, qnet: A + k * B - szD, qappnet: q.V / (B * B) - szD, trials: trials };
+  },
+  figure: function (q, r, step) {
+    return footingSection({ B: isNaN(r.B) ? 2 : r.B, Df: q.Df, Vlabel: 'V = ' + fmt(q.V, 0) + ' kN', wt: true, step: step, wedgeStep: 2, phi: q.phi, Bname: 'B = ?', labelsAbove: ['γ = ' + fmt(q.g, 0) + ' kN/m³ (πάνω από Υ.Ο.)', 'άμμος φ = ' + fmt(q.phi, 0) + '°, c = 0'], labelsBelow: ['γsat = ' + fmt(q.gsat, 0) + ' → γ′ = ' + fmt(r.gsub, 0) + ' kN/m³'] });
+  },
+  figcap: 'Το υπερκείμενο υπολογίζεται με το ολικό βάρος (πάνω από τον Υ.Ο.), ο όρος του πλάτους B με το βυθισμένο γ′.',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('N_q, N_γ') + '</dt><dd>' + fmt(r.Nq, 1) + ', ' + fmt(r.Ng, 1) + '</dd><dt>' + m('σ_{z,D}') + '</dt><dd>' + fmt(r.szD, 0) + ' kPa</dd><dt>' + m('q_{ult}') + '</dt><dd>' + fmt(r.qult, 0) + ' kPa</dd><dt>' + m('B') + '</dt><dd><b>' + fmt(r.B, 2) + ' m</b></dd></dl>'; },
+  steps: [
+    {
+      title: 'Συντελεστές φέρουσας ικανότητας', hl: ['wedge'],
+      body: function (q, r) { return eq('φ = ' + fmt(q.phi, 0) + '°:\\quad N_c = ' + fmt(r.Nc, 1) + ',\\quad N_q = \\hl{' + fmt(r.Nq, 1) + '},\\quad N_γ = \\hl{' + fmt(r.Ng, 1) + '}') + TABLES.bc(q.phi); }
+    },
+    {
+      title: 'Τάση στη στάθμη θεμελίωσης και συντελεστές μορφής', hl: ['Df', 'WT'],
+      body: function (q, r) { return eqs([['σ_{z,D} = γ\\,D_f = ' + fmt(q.g, 0) + '\\times' + fmt(q.Df, 1) + ' = \\hl{' + fmt(r.szD, 0) + '\\unit{kPa}}'], ['S_q = 1 + \\tan φ = \\hl{' + fmt(r.Sq, 2) + '},\\quad S_γ = 1 - 0.4 = \\hl{0.6}', 'τετράγωνο B/L = 1'], ['c = 0 \\Rightarrow\\;\\text{ο όρος συνοχής μηδενίζεται}']]); }
+    },
+    {
+      title: 'Οριακή φέρουσα ικανότητα συναρτήσει του B', hl: ['B', 'wedge'],
+      body: function (q, r) {
+        return eqs([
+          ['q_{ult} = σ_{z,D}\\,N_q\\,S_q + \\frac{1}{2}\\,γ\'\\,B\\,N_γ\\,S_γ = ' + fmt(r.szD, 0) + '\\times' + fmt(r.Nq, 1) + '\\times' + fmt(r.Sq, 2) + ' + 0.5\\,(' + fmt(q.gsat, 0) + '-10)\\,B\\times' + fmt(r.Ng, 1) + '\\times 0.6'],
+          ['q_{ult} = \\hl{' + fmt(r.A, 1) + ' + ' + fmt(r.k, 1) + '\\,B}']
+        ]);
+      }
+    },
+    {
+      title: 'Καθαρές τάσεις και συντελεστής ασφαλείας', hl: ['V', 'B'],
+      body: function (q, r) {
+        return eqs([
+          ['q_{ult,net} = q_{ult} - σ_{z,D} = ' + fmt(r.A - r.szD, 1) + ' + ' + fmt(r.k, 1) + '\\,B'],
+          ['q_{app,net} = \\frac{V}{B^2} - σ_{z,D} = \\frac{' + fmt(q.V, 0) + '}{B^2} - ' + fmt(r.szD, 0)],
+          ['FS = \\frac{q_{ult,net}}{q_{app,net}} = ' + fmt(q.FSt, 1) + ' \\;\\Rightarrow\\; ' + fmt(r.A - r.szD, 1) + ' + ' + fmt(r.k, 1) + '\\,B = ' + fmt(q.FSt, 1) + '\\left(\\frac{' + fmt(q.V, 0) + '}{B^2} - ' + fmt(r.szD, 0) + '\\right)']
+        ]);
+      }
+    },
+    {
+      title: 'Λύση με δοκιμές', hl: ['B'],
+      body: function (q, r) {
+        var rows = r.trials.map(function (t) { return ['B = ' + fmt(t.B, 2) + ' m', fmt(t.qult, 0), fmt(t.net, 0), fmt(t.app, 0), fmt(t.FS, 2)]; });
+        rows.push(['B = ' + fmt(r.B, 2) + ' m (ακριβής)', fmt(r.qult, 0), fmt(r.qnet, 0), fmt(r.qappnet, 0), fmt(q.FSt, 2)]);
+        return table(['Δοκιμή', m('q_{ult}'), m('q_{ult,net}'), m('q_{app,net}'), 'FS'], rows, rows.length - 1) + eq('\\Rightarrow\\; B \\approx \\hl{' + fmt(r.B, 2) + '\\unit{m}}');
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('B \\approx ' + fmt(r.B, 1) + '\\unit{m}') + '</div><p>Τετραγωνικό θεμέλιο ' + fmt(r.B, 1) + ' × ' + fmt(r.B, 1) + ' m. Η καθαρή επιβαλλόμενη τάση μειώνεται με το B² ενώ η φέρουσα ικανότητα αυξάνει γραμμικά με το B.</p>'; }
+});
+
+/* ===================== ΑΣΚΗΣΗ 8 ===================== */
+EX.push({
+  id: 'b8', num: 8, group: 'Γενική εξίσωση φέρουσας ικανότητας', source: 'Άσκηση 8',
+  title: 'Ελάχιστος FS ορθογωνικού θεμελίου: αστράγγιστη (TSA) και στραγγιζόμενη (ESA) ανάλυση',
+  tags: ['TSA / ESA', 'Άργιλος', 'Υδροφόρος', 'Ορθογώνιο'],
+  statement: p('Να υπολογιστεί ο ελάχιστος συντελεστής ασφαλείας έναντι φέρουσας ικανότητας στην κατακόρυφη διεύθυνση ορθογωνικού θεμελίου ' + m('4\\times 2\\unit{m}') + '. Ο υδροφόρος ορίζοντας βρίσκεται στη στάθμη θεμελίωσης και το έδαφος θεωρείται γενικά κορεσμένο.') +
+    '<ul><li>Βάθος θεμελίωσης ' + m('D_f = 2\\unit{m}') + ', κατακόρυφο φορτίο ' + m('P = 3065\\unit{kN}') + '</li><li>Αστράγγιστη διατμητική αντοχή ' + m('c_u = 91\\unit{kPa}') + '</li><li>Γωνία τριβής υπό στραγγιζόμενες συνθήκες ' + m('φ\' = 30°') + ', ' + m('c\' = 0') + '</li><li>Κορεσμένο ειδικό βάρος ' + m('γ_{sat} = 20\\unit{kN/m³}') + '</li></ul>',
+  givens: [
+    { key: 'P', label: 'Κατακόρυφο φορτίο P', unit: 'kN', value: 3065, min: 1000, max: 6000, step: 5 },
+    { key: 'B', label: 'Πλάτος B', unit: 'm', value: 2, min: 1, max: 4, step: 0.25 },
+    { key: 'L', label: 'Μήκος L', unit: 'm', value: 4, min: 2, max: 8, step: 0.25 },
+    { key: 'Df', label: 'Βάθος θεμελίωσης Df', unit: 'm', value: 2, min: 0.5, max: 4, step: 0.25 },
+    { key: 'cu', label: 'Αστράγγιστη αντοχή cu', unit: 'kPa', value: 91, min: 30, max: 200, step: 1 },
+    { key: 'phi', label: 'Γωνία τριβής φ′', unit: '°', value: 30, min: 20, max: 38, step: 1, dec: 0 },
+    { key: 'gsat', label: 'Κορεσμένο ειδικό βάρος γsat', unit: 'kN/m³', value: 20, min: 17, max: 22, step: 0.5, dec: 1 }
+  ],
+  compute: function (q) {
+    var B = Math.min(q.B, q.L), L = Math.max(q.B, q.L), BL = B / L, p0 = q.gsat * q.Df, qapp = q.P / (B * L), qappnet = qapp - p0, gsub = q.gsat - 10;
+    // TSA
+    var t = { Nc: 5.14, Nq: 1, Ng: 0, Sc: 1 + 0.2 * BL, Sq: 1, Sg: 1 - 0.4 * BL };
+    t.q1 = q.cu * t.Nc * t.Sc; t.q2 = p0 * t.Nq * t.Sq; t.qult = t.q1 + t.q2; t.net = t.qult - p0; t.FS = t.net / qappnet;
+    // ESA
+    var e = { Nc: GEO.Nc(q.phi), Nq: GEO.Nq(q.phi), Ng: GEO.Ng(q.phi) };
+    e.Sc = 1 + e.Nq / e.Nc * BL; e.Sq = 1 + BL * tand(q.phi); e.Sg = 1 - 0.4 * BL;
+    e.q1 = p0 * e.Nq * e.Sq; e.q2 = 0.5 * gsub * B * e.Ng * e.Sg; e.qult = e.q1 + e.q2; e.net = e.qult - p0; e.FS = e.net / qappnet;
+    return { B: B, L: L, BL: BL, p0: p0, qapp: qapp, qappnet: qappnet, gsub: gsub, t: t, e: e, FSmin: Math.min(t.FS, e.FS), governs: t.FS <= e.FS ? 'TSA' : 'ESA' };
+  },
+  figure: function (q, r, step) {
+    var sec = footingSection({ B: r.B, Df: q.Df, Vlabel: 'P = ' + fmt(q.P, 0) + ' kN', wt: true, step: step, wedgeStep: 1, phi: step >= 2 ? q.phi : 0, lowerType: 'clay', labelsAbove: ['γκ = ' + fmt(q.gsat, 0) + ' kN/m³'], labelsBelow: ['cu = ' + fmt(q.cu, 0) + ' kPa (TSA)', 'φ′ = ' + fmt(q.phi, 0) + '°, c′ = 0 (ESA)', 'γ′ = ' + fmt(r.gsub, 0) + ' kN/m³'] });
+    // comparison bars
+    var W = 300, Hc = 260, h = SVG.open(W, Hc, 'aria-label="Σύγκριση συντελεστών ασφαλείας TSA και ESA"');
+    var maxFS = Math.max(r.t.FS, r.e.FS, 3.5), Y = function (v) { return 220 - v / maxFS * 170; };
+    h += SVG.line(40, 220, 280, 220, 'axis') + SVG.line(40, 40, 40, 220, 'axis');
+    [1, 2, 3].forEach(function (v) { if (v <= maxFS) h += SVG.line(40, Y(v), 280, Y(v), 'grid') + SVG.text(34, Y(v) + 4, 'FS=' + v, 'lbl-muted', 'text-anchor="end"'); });
+    var bars = [{ n: 'TSA', v: r.t.FS, x: 80, on: step >= 1 }, { n: 'ESA', v: r.e.FS, x: 180, on: step >= 3 }];
+    bars.forEach(function (b) {
+      if (!b.on) return;
+      var gov = b.v === r.FSmin;
+      h += '<g data-k="' + b.n + '" class="a-down">' + SVG.rect(b.x, Y(b.v), 60, 220 - Y(b.v), gov ? 'warnf' : 'ok') + '</g>';
+      h += SVG.label(b.x + 30, Y(b.v) - 6, 'FS = ' + fmt(b.v, 2), 'math') + SVG.text(b.x + 30, 240, b.n, '', 'text-anchor="middle" font-weight="600"');
+    });
+    h += SVG.text(150, 20, 'Συντελεστές ασφαλείας', 'lbl-muted', 'text-anchor="middle"');
+    h += SVG.close();
+    return side2(sec, h);
+  },
+  figcap: 'Η ίδια άργιλος αναλύεται δύο φορές: αμέσως μετά τη φόρτιση (αστράγγιστα, cu, φ = 0) και μακροπρόθεσμα (στραγγιζόμενα, c′ = 0, φ′). Κρίσιμη είναι η μικρότερη τιμή FS.',
+  quick: function (q, r) { return '<dl class="given"><dt>' + m('q_{app,net}') + '</dt><dd>' + fmt(r.qappnet, 0) + ' kPa</dd><dt>' + m('q_{ult}') + ' TSA</dt><dd>' + fmt(r.t.qult, 0) + ' kPa</dd><dt>FS (TSA)</dt><dd>' + fmt(r.t.FS, 2) + '</dd><dt>' + m('q_{ult}') + ' ESA</dt><dd>' + fmt(r.e.qult, 0) + ' kPa</dd><dt>FS (ESA)</dt><dd>' + fmt(r.e.FS, 2) + '</dd><dt>FS<sub>min</sub></dt><dd><b>' + fmt(r.FSmin, 2) + ' (' + r.governs + ')</b></dd></dl>'; },
+  steps: [
+    {
+      title: 'Επιβαλλόμενη καθαρή τάση', hl: ['V', 'Df'],
+      body: function (q, r) { return eqs([['q_{app} = \\frac{P}{B\\,L} = \\frac{' + fmt(q.P, 0) + '}{' + fmt(r.B, 1) + '\\times' + fmt(r.L, 1) + '} = ' + fmt(r.qapp, 1) + '\\unit{kPa}'], ['q_{app,net} = q_{app} - γ_κ\\,D_f = ' + fmt(r.qapp, 1) + ' - ' + fmt(r.p0, 0) + ' = \\hl{' + fmt(r.qappnet, 1) + '\\unit{kPa}}']]); }
+    },
+    {
+      title: 'TSA – ανάλυση ολικών τάσεων (αστράγγιστες συνθήκες)', hl: ['wedge', 'TSA'],
+      cap: 'φ = 0: μόνο ο όρος συνοχής (cu·Nc·Sc) και το υπερκείμενο. Nγ = 0, Nq = 1.',
+      body: function (q, r) {
+        var t = r.t;
+        return eqs([
+          ['c_u = ' + fmt(q.cu, 0) + '\\unit{kPa},\\; φ = 0 \\;\\Rightarrow\\; N_c = 5.14,\\; N_q = 1,\\; N_γ = 0'],
+          ['S_c = 1 + 0.2\\,\\frac{B}{L} = ' + fmt(t.Sc, 2) + ',\\quad S_q = 1,\\quad S_γ = 1 - 0.4\\,\\frac{B}{L} = ' + fmt(t.Sg, 2)],
+          ['q_{ult} = c_u N_c S_c + γ_κ D_f N_q S_q + 0 = ' + fmt(q.cu, 0) + '\\times 5.14\\times' + fmt(t.Sc, 2) + ' + ' + fmt(r.p0, 0) + ' = \\hl{' + fmt(t.qult, 0) + '\\unit{kPa}}'],
+          ['q_{ult,net} = ' + fmt(t.qult, 0) + ' - ' + fmt(r.p0, 0) + ' = ' + fmt(t.net, 0) + '\\unit{kPa} \\;\\Rightarrow\\; FS_{TSA} = \\frac{' + fmt(t.net, 0) + '}{' + fmt(r.qappnet, 0) + '} = \\hl{' + fmt(t.FS, 2) + '}']
+        ]) + note('Στις αστράγγιστες συνθήκες χρησιμοποιούνται ολικές τάσεις: το υπερκείμενο είναι γκ·Df (όχι γ′), γιατί η πίεση πόρων δεν αφαιρείται.');
+      }
+    },
+    {
+      title: 'ESA – συντελεστές (στραγγιζόμενες συνθήκες)', hl: ['wedge', 'WT'],
+      body: function (q, r) {
+        var e = r.e;
+        return eqs([
+          ['c\' = 0,\\; φ\' = ' + fmt(q.phi, 0) + '° \\;\\Rightarrow\\; N_c = ' + fmt(e.Nc, 1) + ',\\; N_q = \\hl{' + fmt(e.Nq, 1) + '},\\; N_γ = \\hl{' + fmt(e.Ng, 1) + '}'],
+          ['S_c = 1 + \\frac{N_q}{N_c}\\frac{B}{L} = ' + fmt(e.Sc, 2) + ',\\quad S_q = 1 + \\frac{B}{L}\\tan φ\' = \\hl{' + fmt(e.Sq, 2) + '},\\quad S_γ = 1 - 0.4\\frac{B}{L} = \\hl{' + fmt(e.Sg, 2) + '}']
+        ]) + TABLES.bc(q.phi);
+      }
+    },
+    {
+      title: 'ESA – φέρουσα ικανότητα και FS', hl: ['ESA', 'wedge'],
+      body: function (q, r) {
+        var e = r.e;
+        return eqs([
+          ['q_{ult} = γ_κ D_f N_q S_q + \\frac{1}{2}γ\'\\,B\\,N_γ S_γ = ' + fmt(r.p0, 0) + '\\times' + fmt(e.Nq, 1) + '\\times' + fmt(e.Sq, 2) + ' + 0.5\\times' + fmt(r.gsub, 0) + '\\times' + fmt(r.B, 1) + '\\times' + fmt(e.Ng, 1) + '\\times' + fmt(e.Sg, 2)],
+          ['= ' + fmt(e.q1, 0) + ' + ' + fmt(e.q2, 0) + ' = \\hl{' + fmt(e.qult, 0) + '\\unit{kPa}},\\quad q_{ult,net} = ' + fmt(e.net, 0) + '\\unit{kPa}'],
+          ['FS_{ESA} = \\frac{' + fmt(e.net, 0) + '}{' + fmt(r.qappnet, 0) + '} = \\hl{' + fmt(e.FS, 2) + '}']
+        ]);
+      }
+    },
+    {
+      title: 'Σύγκριση: κρίσιμη ανάλυση', hl: ['TSA', 'ESA'],
+      body: function (q, r) {
+        return table(['Ανάλυση', 'Παράμετροι αντοχής', m('q_{ult}') + ' (kPa)', m('q_{ult,net}') + ' (kPa)', 'FS'], [
+          ['TSA (βραχυπρόθεσμα)', 'cu = ' + fmt(q.cu, 0) + ' kPa, φ = 0', fmt(r.t.qult, 0), fmt(r.t.net, 0), fmt(r.t.FS, 2)],
+          ['ESA (μακροπρόθεσμα)', 'c′ = 0, φ′ = ' + fmt(q.phi, 0) + '°', fmt(r.e.qult, 0), fmt(r.e.net, 0), fmt(r.e.FS, 2)]
+        ], r.governs === 'TSA' ? 0 : 1) + eq('FS_{min} = \\hl{' + fmt(r.FSmin, 2) + '}\\quad(' + r.governs + ')');
+      }
+    }
+  ],
+  result: function (q, r) { return '<div class="big">' + m('FS_{min} = ' + fmt(r.FSmin, 1) + '\\;(' + r.governs + ')') + '</div><p>' + (r.governs === 'TSA' ? 'Κρίσιμη είναι η αστράγγιστη (βραχυπρόθεσμη) κατάσταση αμέσως μετά τη φόρτιση. Με τη στερεοποίηση η αντοχή αυξάνει και ο FS μακροπρόθεσμα φτάνει ' + fmt(r.e.FS, 1) + '.' : 'Κρίσιμη είναι η στραγγιζόμενη (μακροπρόθεσμη) κατάσταση.') + '</p>'; }
+});
+
+/* ===================== ΤΥΠΟΛΟΓΙΟ ===================== */
+var SHEET = [
+  { title: 'Ωθήσεις γαιών (Rankine, λείος τοίχος, οριζόντια επιφάνεια)', html: eqs(['K_a = \\tan^2\\left(45° - \\frac{φ}{2}\\right),\\quad K_p = \\tan^2\\left(45° + \\frac{φ}{2}\\right)', 'σ_a = K_a\\,σ_v - 2c\\sqrt{K_a},\\quad σ_p = K_p\\,σ_v + 2c\\sqrt{K_p}', 'P_a = \\frac{1}{2}K_a γ H^2\\;\\text{(στο H/3 από τη βάση)}', 'P_q = K_a\\,q\\,H\\;\\text{(επιφόρτιση q, στο H/2)}', 'P_p = \\frac{σ_{pA}+σ_{pB}}{2}\\,h\\;\\text{(τραπεζοειδής κατανομή)}']) + '<p class="who">Σε λείο τοίχο η ώθηση λαμβάνεται στο κατακόρυφο επίπεδο στο άκρο του πέλματος και το έδαφος πάνω από το πέλμα λογίζεται ως βάρος.</p>' },
+  { title: 'Ευστάθεια τοίχων: εκκεντρότητα, ανατροπή, ολίσθηση', html: eqs(['x̄ = \\frac{\\sum M_A}{\\sum V},\\quad e = x̄ - \\frac{B}{2},\\quad B\' = B - 2|e|', 'e = 0 \\;\\Leftrightarrow\\; \\frac{\\sum M_A}{\\sum V} = \\frac{B}{2}\\;\\Leftrightarrow\\;\\sum M_O = 0', 'FS_{ανατρ} = \\frac{\\sum M_{ευστ}}{\\sum M_{ανατρ}}\\;\\text{(ως προς το άκρο Α)}', 'FS_{ολ} = \\frac{c_u B\' + \\sum V\\tan δ + P_p}{\\sum H}', 'q_{max,min} = \\frac{V}{B\\,L}\\left(1 \\pm \\frac{6e}{B}\\right),\\quad e \\le \\frac{B}{6}\\;\\text{(χωρίς αδρανή περιοχή)}']) },
+  { title: 'DIN 4017 – γενική εξίσωση', html: eqs(['q_{ult} = c\\,N_c\\,K_c\\,V_c + γ_2\\,B\'\\,N_b\\,K_b\\,V_b + γ_1\\,d\\,N_d\\,K_d\\,V_d']) + '<p>' + m('N_c, N_d, N_b') + ' συντελεστές φέρουσας ικανότητας (Πίνακας 1) · ' + m('V') + ' συντελεστές μορφής (Πίνακας 2) · ' + m('K') + ' μειωτικοί συντελεστές λοξής φόρτισης (Πίνακας 3) · ' + m('γ_1') + ' ειδικό βάρος πάνω από τη στάθμη έδρασης, ' + m('γ_2') + ' κάτω από αυτήν (βυθισμένο αν υπάρχει Υ.Ο.).</p>' + eqs(['e = \\frac{M}{V},\\quad B\' = B - 2e_B,\\quad L\' = L - 2e_L,\\quad A\' = B\'L\'', 'N_d = e^{π\\tan φ}\\tan^2(45°+φ/2),\\quad N_c = \\frac{N_d - 1}{\\tan φ},\\quad N_b = (N_d - 1)\\tan φ']) },
+  { title: 'Συντελεστής ασφαλείας (καθαρές τάσεις)', html: eqs(['FS = \\frac{q_{ult,net}}{q_{app,net}} = \\frac{q_{ult} - γ_1 d}{\\frac{V}{A\'} - γ_1 d}']) + '<p>Η υπερκείμενη γεωστατική τάση ' + m('γ_1 d') + ' υπήρχε πριν την κατασκευή: αφαιρείται και από τις δύο τάσεις. Σε επαναληπτικές λύσεις (Kc με FS·H) ο υποτιθέμενος FS πρέπει να συμπέσει με τον υπολογιζόμενο.</p>' },
+  { title: 'Γενική εξίσωση (Terzaghi–Meyerhof–Hansen)', html: eqs(['q_{ult} = c\\,N_c\\,S_c + σ\'_{z,D}\\,N_q\\,S_q + \\frac{1}{2}\\,γ\'\\,B\\,N_γ\\,S_γ', 'N_q = e^{π\\tan φ}\\tan^2\\left(45°+\\frac{φ}{2}\\right),\\quad N_c = (N_q - 1)\\cot φ\\;(= 5.14\\;\\text{για}\\;φ=0),\\quad N_γ = 1.5\\,(N_q - 1)\\tan φ\\;\\text{(Hansen)}', 'S_c = 1 + \\frac{N_q}{N_c}\\frac{B}{L}\\;\\left(= 1 + 0.2\\frac{B}{L}\\;\\text{για}\\;φ=0\\right),\\quad S_q = 1 + \\frac{B}{L}\\tan φ,\\quad S_γ = 1 - 0.4\\frac{B}{L}']) + '<p class="who">' + m('σ_{z,D}') + ': κατακόρυφη τάση στη στάθμη θεμελίωσης (ολική στην TSA, ενεργός στην ESA).</p>' },
+  { title: 'Υδροφόρος ορίζοντας και TSA / ESA', html: eqs(['γ\' = γ_{sat} - γ_w,\\quad γ_w = 10\\unit{kN/m³}']) + '<p><b>Υ.Ο. στη στάθμη θεμελίωσης:</b> υπερκείμενο με ολικό γ (πάνω από τον Υ.Ο.), όρος πλάτους με γ′.</p><p><b>TSA</b> (ολικές τάσεις, βραχυπρόθεσμα): ' + m('c = c_u,\\; φ = 0 \\Rightarrow N_c = 5.14, N_q = 1, N_γ = 0') + ', υπερκείμενο ' + m('γ_{sat} D_f') + '.</p><p><b>ESA</b> (ενεργές τάσεις, μακροπρόθεσμα): ' + m('c\', φ\'') + ', ενεργές γεωστατικές τάσεις. Κρίσιμος ο μικρότερος FS, σε κορεσμένες αργίλους συνήθως η TSA.</p>' },
+  { title: 'Πίνακας 1 · Συντελεστές φέρουσας ικανότητας κατά DIN 4017', html: TABLES.din1(), wide: false },
+  { title: 'Πίνακας 2 · Συντελεστές μορφής κατά DIN 4017', html: TABLES.din2() },
+  { title: 'Πίνακας 3 · Μειωτικοί συντελεστές λοξής φόρτισης (DIN 4017)', html: TABLES.din3() + '<p class="who">H, V: οριζόντια και κατακόρυφη συνιστώσα του φορτίου σχεδιασμού (H<sub>b</sub> = FS·H, V<sub>b</sub> = FS·V). Για c = 0 οι συντελεστές ασφαλείας απλοποιούνται.</p>' },
+  { title: 'Συντελεστές Nc, Nq, Nγ (Hansen) για τη γενική εξίσωση', html: TABLES.bc() }
+];
+
+APP.init({ appName: 'Διαδραστικές Ασκήσεις · Φέρουσα Ικανότητα', version: 'v1.0', desc: 'Υποδειγματικές ασκήσεις φέρουσας ικανότητας επιφανειακών θεμελιώσεων και τοίχων αντιστήριξης', uni: 'Πανεπιστήμιο Πατρών · Τμήμα Πολιτικών Μηχανικών', title: 'Φέρουσα Ικανότητα', subtitle: 'Θεμελιώσεις · Υποδειγματικές ασκήσεις', kicker: 'Φέρουσα ικανότητα', footer: 'Βασισμένο στις Υποδειγματικές Ασκήσεις Φέρουσας Ικανότητας (Π. Πελέκης, 2024).', exercises: EX, sheet: SHEET });
+
+</script>
+</head>
+<body></body>
+</html>
